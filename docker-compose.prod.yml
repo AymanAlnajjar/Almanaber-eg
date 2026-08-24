@@ -1,0 +1,94 @@
+# Production stack for a single VPS.
+#   1. cp .env.prod.example .env   (then edit it — replace example.com, set secrets)
+#   2. docker compose -f docker-compose.prod.yml up -d --build
+#
+# Caddy terminates HTTPS and routes:
+#   https://DOMAIN          -> frontend (Next.js)
+#   https://api.DOMAIN      -> backend  (Laravel API + /admin)
+#
+# All configuration is read from the root .env file (see .env.prod.example).
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # Persist admin-uploaded media across redeploys.
+      - backend_uploads:/var/www/storage/app/public
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "80"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        # NEXT_PUBLIC_* are baked at build time; change domain => rebuild frontend.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+        NEXT_PUBLIC_WHATSAPP_NUMBER: ${NEXT_PUBLIC_WHATSAPP_NUMBER}
+        NEXT_PUBLIC_WHATSAPP_MESSAGE: ${NEXT_PUBLIC_WHATSAPP_MESSAGE}
+    restart: unless-stopped
+    expose:
+      - "3000"
+    volumes:
+      # Persist Next.js optimized-image cache across rebuilds so images are
+      # encoded once (expensive on this 1-core box), not on every deploy.
+      - frontend_image_cache:/app/.next/cache/images
+    depends_on:
+      - backend
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      default:
+        # So the frontend's server-side rendering can reach the API by its
+        # public hostname from inside Docker (resolves to Caddy internally,
+        # which serves the valid TLS cert for that name).
+        aliases:
+          - ${DOMAIN}
+          - www.${DOMAIN}
+          - api.${DOMAIN}
+
+volumes:
+  db_data:
+  backend_uploads:
+  caddy_data:
+  caddy_config:
+  frontend_image_cache:

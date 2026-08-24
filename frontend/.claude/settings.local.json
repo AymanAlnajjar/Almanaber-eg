@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wsl bash:*)",
+      "Bash(php:*)",
+      "Bash(wsl php:*)",
+      "Bash(wsl which:*)",
+      "Bash(cat:*)",
+      "Bash(wsl ps:*)",
+      "Bash(curl:*)",
+      "Bash(wsl pkill -f \"php artisan serve\")",
+      "Bash(find:*)"
+    ]
+  }
+}

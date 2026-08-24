@@ -1,0 +1,31 @@
+stages:
+  - deploy
+
+deploy_production:
+  stage: deploy
+  image: alpine:latest
+  only:
+    - main  # Triggers on push to main branch
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+  script:
+    - ssh $SERVER_USER@$SERVER_IP "
+        cd /var/www/almanabr-backend &&
+        git pull origin main &&
+        composer install --no-dev --optimize-autoloader --no-interaction &&
+        php artisan migrate --force &&
+        php artisan db:seed --force &&
+        php artisan config:cache &&
+        php artisan route:cache &&
+        php artisan view:cache &&
+        php artisan storage:link 2>/dev/null || true &&
+        sudo systemctl reload php8.3-fpm 2>/dev/null || sudo service php-fpm reload 2>/dev/null || true &&
+        echo 'Deployment successful!'
+      "
+  environment:
+    name: production
+    url: https://api.almnaber.com

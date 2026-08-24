@@ -1,0 +1,44 @@
+# ── Secrets / environment ─────────────────────────────────────────────
+# Never commit real credentials. The *.example files ARE tracked (below).
+.env
+.env.*
+!.env.example
+!.env.prod.example
+backend/.env
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# ── Dependencies (installed inside the Docker build) ──────────────────
+node_modules/
+/backend/vendor/
+
+# ── Build output ──────────────────────────────────────────────────────
+/frontend/.next/
+/frontend/out/
+/frontend/build/
+
+# ── Laravel runtime (regenerated at runtime / lives in volumes) ───────
+/backend/storage/*.key
+/backend/storage/app/public/*
+!/backend/storage/app/public/.gitkeep
+/backend/storage/logs/*
+/backend/storage/framework/cache/*
+/backend/storage/framework/sessions/*
+/backend/storage/framework/views/*
+/backend/bootstrap/cache/*
+/backend/database/database.sqlite
+
+# ── Backups & handover package (may contain data / secrets) ───────────
+HANDOVER/
+backups/
+*.tar.gz
+*.sql
+*.sqlite
+
+# ── OS / editor cruft ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/

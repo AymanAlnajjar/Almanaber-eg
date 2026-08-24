@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+:root {
+  --background: #092754;
+  --foreground: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Line clamp utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Service Card Component Styles */
+.service-card-with-bg {
+  @apply relative overflow-hidden rounded-xl p-6 transition-all duration-500 ease-out;
+  box-shadow: 0 4px 6px -1px rgba(26, 41, 80, 0.1), 0 2px 4px -1px rgba(26, 41, 80, 0.06);
+}
+
+.service-card-with-bg:hover {
+  @apply -translate-y-2 scale-105;
+  box-shadow: 0 20px 25px -5px rgba(26, 41, 80, 0.15), 0 10px 10px -5px rgba(26, 41, 80, 0.1);
+}
+
+.service-card-with-bg:hover .service-icon {
+  @apply scale-110;
+  filter: drop-shadow(0 0 20px rgba(26, 41, 80, 0.4)) brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(200deg) brightness(104%) contrast(97%);
+}
+
+.service-card-with-bg:hover .service-title {
+  @apply text-[#1a2950];
+}
+
+/* Service Icon */
+.service-icon {
+  @apply mb-4 text-[#1a2950] transition-all duration-300 relative z-10;
+}
+
+.service-icon.text-right {
+  @apply text-right;
+}
+
+.service-icon.text-left {
+  @apply text-left;
+}
+
+/* Service Title */
+.service-title {
+  @apply mb-2 text-lg font-semibold text-[#1a2950] transition-colors duration-300 relative z-10;
+}
+
+.service-title.text-right {
+  @apply text-right;
+}
+
+.service-title.text-left {
+  @apply text-left;
+}
+
+/* Service Description */
+.service-description {
+  @apply text-sm text-gray-600 leading-relaxed relative z-10;
+}
+
+.service-description.text-right {
+  @apply text-right;
+}
+
+.service-description.text-left {
+  @apply text-left;
+}
+
+/* CTA Button */
+.cta-button {
+  @apply relative overflow-hidden rounded-full px-8 py-4 font-medium text-white transition-all duration-300 ease-out;
+  background: linear-gradient(135deg, #1a2950 0%, #092754 100%);
+  box-shadow: 0 4px 6px -1px rgba(26, 41, 80, 0.1), 0 2px 4px -1px rgba(26, 41, 80, 0.06);
+}
+
+.cta-button:hover {
+  @apply -translate-y-1;
+  box-shadow: 0 20px 25px -5px rgba(26, 41, 80, 0.15), 0 10px 10px -5px rgba(26, 41, 80, 0.1), 0 0 40px rgba(26, 41, 80, 0.3);
+}
+
+.cta-button::before {
+  @apply absolute inset-0 translate-x-[-100%] transition-transform duration-300 ease-out;
+  content: '';
+  background: linear-gradient(135deg, #1a2950 0%, #092754 100%);
+}
+
+.cta-button:hover::before {
+  @apply translate-x-0;
+}
+
+.cta-button span {
+  @apply relative z-10;
+}

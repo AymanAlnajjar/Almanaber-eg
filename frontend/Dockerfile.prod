@@ -1,0 +1,52 @@
+# Production image for the Next.js frontend (standalone output, Alpine base).
+# NEXT_PUBLIC_* values are baked in at BUILD time, so if you change the domain
+# you must rebuild this image: `docker compose -f docker-compose.prod.yml build frontend`.
+
+# ---- Build stage ----
+FROM node:20-alpine AS builder
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+# Public env vars must be present during `next build`.
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_WHATSAPP_NUMBER
+ARG NEXT_PUBLIC_WHATSAPP_MESSAGE
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+    NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
+    NEXT_PUBLIC_WHATSAPP_NUMBER=$NEXT_PUBLIC_WHATSAPP_NUMBER \
+    NEXT_PUBLIC_WHATSAPP_MESSAGE=$NEXT_PUBLIC_WHATSAPP_MESSAGE \
+    NEXT_TELEMETRY_DISABLED=1
+
+RUN npm run build
+
+# ---- Runtime stage ----
+FROM node:20-alpine AS runner
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+ENV NODE_ENV=production \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0 \
+    NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup -S -g 1001 nodejs && adduser -S -u 1001 -G nodejs nextjs
+
+# Standalone build: server.js + minimal node_modules, plus static assets & public/.
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Optimized-image cache lives here at runtime. Create it owned by nextjs so a
+# persistent Docker volume mounted here (see docker-compose.prod.yml) inherits
+# writable ownership and survives rebuilds — images are encoded once, not on
+# every deploy.
+RUN mkdir -p .next/cache/images && chown -R nextjs:nodejs .next/cache
+
+USER nextjs
+EXPOSE 3000
+CMD ["node", "server.js"]

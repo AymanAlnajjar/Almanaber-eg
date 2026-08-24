@@ -1,0 +1,41 @@
+# Development image for the Laravel backend.
+# Source code and vendor/ are mounted at runtime (see docker-compose.yml),
+# so this image only provides the PHP runtime + Composer. Dependency install,
+# migrations and seeding happen in the compose `command`.
+FROM php:8.3-cli
+
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    libicu-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    default-mysql-client \
+    zip \
+    unzip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    xml \
+    ctype \
+    fileinfo \
+    bcmath \
+    zip \
+    intl \
+    gd \
+    opcache \
+    pcntl
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www
+
+EXPOSE 8000

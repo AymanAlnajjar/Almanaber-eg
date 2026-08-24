@@ -1,0 +1,79 @@
+# Local development stack for the Al-Mnabr website.
+#   docker compose up --build
+#
+# Services:
+#   db       – MySQL 8 (data persisted in the db_data volume)
+#   backend  – Laravel 12 API + Filament admin, served at http://localhost:8000
+#   frontend – Next.js 15 dev server at http://localhost:3000
+#
+# The frontend shares the backend's network namespace (network_mode:
+# service:backend) so that http://localhost:8000/api resolves to the backend
+# both in the browser AND during Next.js server-side rendering, with no
+# application-code changes. Because of that, the frontend's port (3000) is
+# published on the backend service below.
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: almanabr
+      MYSQL_USER: almanabr_user
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    working_dir: /var/www
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"   # Laravel API + /admin
+      - "3000:3000"   # Next.js (published here; frontend shares this netns)
+    volumes:
+      - ./backend:/var/www
+      - backend_vendor:/var/www/vendor
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -euc '
+      composer install --no-interaction --prefer-dist;
+      grep -q "^APP_KEY=base64" .env || php artisan key:generate --force;
+      until php artisan migrate --force; do echo "DB not ready, retrying in 3s..."; sleep 3; done;
+      php artisan db:seed --force || true;
+      php artisan storage:link || true;
+      php artisan serve --host=0.0.0.0 --port=8000
+      '
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    working_dir: /app
+    network_mode: "service:backend"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      - backend
+    command: >
+      sh -euc '
+      npm install;
+      npm run dev -- -H 0.0.0.0 -p 3000
+      '
+
+volumes:
+  db_data:
+  backend_vendor:
+  frontend_node_modules:

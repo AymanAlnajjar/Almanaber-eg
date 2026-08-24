@@ -1,0 +1,12 @@
+# Development image for the Next.js frontend.
+# Source and node_modules are mounted at runtime (see docker-compose.yml);
+# npm install + `next dev` run in the compose `command`.
+FROM node:20-bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libc6 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+EXPOSE 3000

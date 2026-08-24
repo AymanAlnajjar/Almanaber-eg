@@ -1,0 +1,31 @@
+# Local full-stack TEST override (no Caddy / no HTTPS).
+# Runs the PRODUCTION images but wired for http://localhost so you can log into
+# the admin panel, upload real data + images, and see the actual site.
+#
+#   Start:  docker compose -f docker-compose.prod.yml -f docker-compose.local.yml up -d --build
+#   Stop:   docker compose -f docker-compose.prod.yml -f docker-compose.local.yml stop
+#   (Do NOT use `down -v` — that deletes your entered data. Plain `stop`/`down` keeps it.)
+#
+#   Site:   http://localhost:3000
+#   Admin:  http://localhost/admin      (login: ADMIN_EMAIL / ADMIN_PASSWORD from .env)
+#   API:    http://localhost/api/health
+#
+# Your data persists in the db_data + backend_uploads Docker volumes and can be
+# migrated to the production VPS later.
+#
+# The frontend shares the backend's network namespace so that http://localhost
+# reaches the API both in the browser AND during Next.js server-side rendering.
+services:
+  backend:
+    ports:
+      - "80:80"       # Laravel API + Filament /admin
+      - "3000:3000"   # Next.js frontend (published here; it shares this netns)
+
+  frontend:
+    # Clear the base `expose: 3000` — it conflicts with sharing a netns.
+    expose: !reset []
+    network_mode: "service:backend"
+
+  caddy:
+    # Caddy needs a real domain for TLS, so keep it out of local runs.
+    profiles: ["disabled"]

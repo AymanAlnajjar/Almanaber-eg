@@ -1,0 +1,94 @@
+# Production stack that PULLS pre-built images from a container registry (built
+# and pushed by .github/workflows/docker-publish.yml) instead of building them on
+# the server. Ideal for hosting on a modest box that cannot build Next.js.
+#
+# Quick start for the server admin:
+#   1. Copy this repo (or just this file + Caddyfile + .env.prod.example) to the box.
+#   2. cp .env.prod.example .env   and edit it (DOMAIN, DB secrets, admin, mail…).
+#   3. In .env set the image paths to your registry, e.g.:
+#        FRONTEND_IMAGE=ghcr.io/<owner>/almnabr-frontend:latest
+#        BACKEND_IMAGE=ghcr.io/<owner>/almnabr-backend:latest
+#   4. If the GHCR packages are private:  docker login ghcr.io   (PAT with read:packages)
+#   5. docker compose -f docker-compose.registry.yml pull
+#   6. docker compose -f docker-compose.registry.yml up -d
+#
+# DNS: point <domain> and api.<domain> at this server (A/AAAA), "DNS only" if
+# behind Cloudflare, so Caddy can issue certificates and SSR can reach the API.
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  backend:
+    # Laravel reads all config from .env at runtime, so this image is generic.
+    image: ${BACKEND_IMAGE:-ghcr.io/OWNER/almnabr-backend:latest}
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # Persist admin-uploaded media across redeploys.
+      - backend_uploads:/var/www/storage/app/public
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "80"
+
+  frontend:
+    # NOTE: NEXT_PUBLIC_* (domain, WhatsApp) are baked into this image at BUILD
+    # time by the GitHub Action. To serve a different domain, set the repo
+    # variables and rebuild — they cannot be changed by this .env.
+    image: ${FRONTEND_IMAGE:-ghcr.io/OWNER/almnabr-frontend:latest}
+    restart: unless-stopped
+    expose:
+      - "3000"
+    volumes:
+      # Persist Next.js optimized-image cache across restarts.
+      - frontend_image_cache:/app/.next/cache/images
+    depends_on:
+      - backend
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      default:
+        # So the frontend's server-side rendering can reach the API by its public
+        # hostname from inside Docker (resolves to Caddy internally, which serves
+        # the valid TLS cert for that name).
+        aliases:
+          - ${DOMAIN}
+          - www.${DOMAIN}
+          - api.${DOMAIN}
+
+volumes:
+  db_data:
+  backend_uploads:
+  caddy_data:
+  caddy_config:
+  frontend_image_cache:

@@ -1,0 +1,38 @@
+# Edge reverse proxy with automatic HTTPS (Let's Encrypt).
+# {$DOMAIN} is provided by docker-compose.prod.yml from the root .env file.
+#
+# Requires: DNS A/AAAA records for  DOMAIN, www.DOMAIN, api.DOMAIN  pointing at
+# this server, and ports 80 + 443 reachable from the internet.
+
+# Main site (Next.js)
+{$DOMAIN} {
+	encode gzip zstd
+	reverse_proxy frontend:3000
+}
+
+# www -> apex redirect
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}
+
+# API + Filament admin (Laravel behind nginx/php-fpm)
+api.{$DOMAIN} {
+	encode gzip zstd
+
+	# Cache uploaded files (projects, hero, service backgrounds, blogs) hard.
+	# Filenames are unique ULIDs, so content under a given URL never changes —
+	# safe to cache for a year. Scoped to /storage/* so /api/* JSON and /admin
+	# stay dynamic and uncached.
+	@storage path /storage/*
+	header @storage Cache-Control "public, max-age=31536000, immutable"
+
+	reverse_proxy backend:80
+}
+
+# Old domain -> permanent redirect to the new primary domain.
+# (Kept so existing links to almanaber.online keep working. Its DNS must still
+# point at this server for the redirect + its certificate to work. Remove this
+# block if the old domain is retired.)
+almanaber.online, www.almanaber.online {
+	redir https://{$DOMAIN}{uri} permanent
+}

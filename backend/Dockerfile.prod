@@ -1,0 +1,78 @@
+# Production image for the Laravel + Filament backend.
+# Multi-stage: a "builder" compiles the PHP extensions and installs Composer
+# deps (needs dev headers + compilers); the final "runtime" image ships only
+# the compiled artifacts + runtime shared libraries, so it stays small.
+# Runs nginx + php-fpm (via supervisor) and serves on port 80.
+
+# --------------------------------------------------------------------------
+# Builder — has the compiler toolchain and -dev headers (discarded afterwards)
+# --------------------------------------------------------------------------
+FROM php:8.3-fpm-bookworm AS builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git unzip \
+    libpng-dev libonig-dev libxml2-dev libzip-dev libicu-dev \
+    libfreetype6-dev libjpeg62-turbo-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j"$(nproc)" \
+    pdo pdo_mysql mbstring xml ctype fileinfo bcmath zip intl gd opcache pcntl
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www
+
+# Install PHP deps first (better layer caching)
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
+
+# App code + optimized autoloader
+COPY . .
+RUN composer dump-autoload --optimize --no-dev
+
+# --------------------------------------------------------------------------
+# Runtime — slim: only runtime shared libs + web server + compiled artifacts
+# --------------------------------------------------------------------------
+FROM php:8.3-fpm-bookworm AS runtime
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    nginx supervisor \
+    libpng16-16 libjpeg62-turbo libfreetype6 libicu72 libzip4 libonig5 libxml2 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Compiled PHP extensions + their enabling ini files from the builder
+COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
+
+# PHP tuning: large uploads + opcache (zz- prefix loads after ext ini files)
+RUN { \
+    echo "upload_max_filesize=50M"; \
+    echo "post_max_size=52M"; \
+    echo "memory_limit=512M"; \
+    echo "max_execution_time=120"; \
+    } > /usr/local/etc/php/conf.d/zz-uploads.ini \
+    && { \
+    echo "opcache.enable=1"; \
+    echo "opcache.memory_consumption=128"; \
+    echo "opcache.max_accelerated_files=10000"; \
+    echo "opcache.validate_timestamps=0"; \
+    } > /usr/local/etc/php/conf.d/zz-opcache.ini
+
+WORKDIR /var/www
+
+# Application + vendor (already built, no Composer needed at runtime)
+COPY --from=builder /var/www /var/www
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+# Server + process configs
+COPY docker/nginx.conf /etc/nginx/sites-available/default
+COPY docker/supervisord.conf /etc/supervisor/conf.d/app.conf
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh \
+    && chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 80
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]

@@ -35,6 +35,13 @@ export default function Hero({ slides }: HeroProps) {
 
   return (
     <div className="w-full h-[90vh] md:h-[100vh] relative overflow-hidden">
+      {/* Single H1 for the homepage (SEO audit §3.4). Screen-reader/SEO only so it
+          doesn't disturb the hero carousel — can be promoted to a visible headline. */}
+      <h1 className="sr-only">
+        {locale === "ar"
+          ? "شركة المنابر للاستشارات الهندسية"
+          : "Al Manaber Consulting Engineering"}
+      </h1>
       <Swiper
         key={locale}
         modules={[Autoplay, Pagination, Navigation]}

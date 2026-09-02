@@ -64,9 +64,11 @@ export default function Services({ services }: ServicesProps) {
 
                 <div className="service-overlay">
                   <div className="service-content">
-                    <h3 className="service-title">
+                    {/* Not a heading — the always-visible label above is the single
+                        <h3> for this card (SEO audit §5: duplicated headings). */}
+                    <div className="service-title">
                       {locale === "ar" ? service.title_ar : service.title_en}
-                    </h3>
+                    </div>
                     <p className="service-description">
                       {locale === "ar" ? service.description_ar : service.description_en}
                     </p>

@@ -221,7 +221,7 @@
       "nav_news": "الأخبار",
       "nav_blogs": "المدونة",
       "nav_careers": "الوظائف",
-      "copyright": "© 2025 المنابر. جميع الحقوق محفوظة.",
+      "copyright": "© {year} المنابر. جميع الحقوق محفوظة.",
       "privacy_policy": "سياسة الخصوصية",
       "terms_of_service": "شروط الخدمة",
       "cookies_settings": "إعدادات الكوكيز"

@@ -5,7 +5,7 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import Footer from "@/components/Footer";
 import { Metadata } from "next";
 
-const tajawal = Tajawal({ subsets: ["arabic", "latin"], weight: ["400", "500", "700"] });
+const tajawal = Tajawal({ subsets: ["arabic", "latin"], weight: ["400", "500", "700"], display: "swap" });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://almnaber.com";
 
@@ -17,17 +17,7 @@ export const metadata: Metadata = {
   },
   description:
     "AlMnaber Consulting Professional Co. is a leading Saudi engineering consultancy specializing in architectural design, structural engineering, fire & life safety, infrastructure, and project management.",
-  keywords: [
-    "engineering consultancy",
-    "architectural design",
-    "structural engineering",
-    "fire safety",
-    "infrastructure",
-    "project management",
-    "Saudi Arabia",
-    "construction",
-    "AlMnaber",
-  ],
+  // Meta keywords intentionally omitted — Google ignores them (SEO audit §3.3).
   authors: [{ name: "AlMnaber Consulting Professional Co." }],
   creator: "AlMnaber Consulting Professional Co.",
   icons: {

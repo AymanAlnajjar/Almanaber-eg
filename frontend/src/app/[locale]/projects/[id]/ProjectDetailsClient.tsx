@@ -52,6 +52,10 @@ export default function ProjectDetailsClient({ project, locale }: ProjectDetails
           <FiArrowLeft />
           {t('project_details', 'back_to_projects')}
         </Link>
+        {/* Single H1 = the project name (SEO audit §3.4). */}
+        <h1 className="text-3xl md:text-4xl font-bold text-[#1a2950] mt-2">
+          {locale === 'ar' ? project.name_ar : project.name_en}
+        </h1>
       </div>
 
       {/* Main Project Image */}

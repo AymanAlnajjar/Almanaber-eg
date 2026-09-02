@@ -18,6 +18,23 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* SEO audit: every clickable element should show a pointer cursor. */
+a[href],
+button:not(:disabled),
+[role="button"],
+summary,
+label[for] {
+  cursor: pointer;
+}
+
+/* SEO audit §item 24: give Arabic headings enough line-height so descenders
+   (ج ح خ ي …) are not clipped. Utility `leading-*` classes still override. */
+h1,
+h2,
+h3 {
+  line-height: 1.35;
+}
+
 /* Line clamp utilities */
 .line-clamp-2 {
   display: -webkit-box;

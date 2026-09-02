@@ -4,13 +4,16 @@ import Image from 'next/image';
 import { FaFacebookF, FaInstagram, FaXTwitter, FaLinkedinIn, FaYoutube } from 'react-icons/fa6';
 import { useLanguage } from '@/context/LanguageContext';
 
+// Real profile URLs go here. Entries left empty are NOT rendered — a dead social
+// bar (href="#") hurts credibility and accessibility (SEO audit P1), so icons
+// only appear once a real URL is filled in.
 const socialLinks = [
-  { icon: <FaFacebookF />, href: '#' },
-  { icon: <FaInstagram />, href: '#' },
-  { icon: <FaXTwitter />, href: '#' },
-  { icon: <FaLinkedinIn />, href: '#' },
-  { icon: <FaYoutube />, href: '#' },
-];
+  { icon: <FaFacebookF />, href: '', label: 'Facebook' },
+  { icon: <FaInstagram />, href: '', label: 'Instagram' },
+  { icon: <FaXTwitter />, href: '', label: 'X (Twitter)' },
+  { icon: <FaLinkedinIn />, href: '', label: 'LinkedIn' },
+  { icon: <FaYoutube />, href: '', label: 'YouTube' },
+].filter((s) => s.href && s.href !== '#');
 
 export default function Footer() {
   const { t, locale } = useLanguage();
@@ -40,18 +43,20 @@ export default function Footer() {
             </Link>
           ))}
         </nav>
-        {/* Social Icons */}
-        <div className="flex gap-4">
-          {socialLinks.map((s, i) => (
-            <a key={i} href={s.href} target="_blank" rel="noopener noreferrer" className="text-white 2xl:text-lg 4k:text-2xl hover:text-blue-300">
-              {s.icon}
-            </a>
-          ))}
-        </div>
+        {/* Social Icons — only rendered when at least one real URL is configured */}
+        {socialLinks.length > 0 && (
+          <div className="flex gap-4">
+            {socialLinks.map((s, i) => (
+              <a key={i} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} className="text-white 2xl:text-lg 4k:text-2xl hover:text-blue-300">
+                {s.icon}
+              </a>
+            ))}
+          </div>
+        )}
       </div>
       <hr className="my-8 border-gray-300" />
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-white text-sm">
-        <div>{t('footer', 'copyright')}</div>
+        <div>{t('footer', 'copyright').replace('{year}', String(new Date().getFullYear()))}</div>
         <div className="flex gap-6 flex-wrap justify-center">
           <Link href={`/${locale}/privacy-policy`} className="underline">{t('footer', 'privacy_policy')}</Link>
           <Link href={`/${locale}/terms-of-service`} className="underline">{t('footer', 'terms_of_service')}</Link>

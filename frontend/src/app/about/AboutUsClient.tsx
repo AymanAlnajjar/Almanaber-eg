@@ -1,6 +1,7 @@
 "use client";
 import { useLanguage } from "@/context/LanguageContext";
 import Image from "next/image";
+import Link from "next/link";
 import { HiDownload, HiStar, HiBadgeCheck, HiEmojiHappy, HiLightBulb, HiHand, HiUsers, HiEye, HiTrendingUp, HiShieldCheck, HiGlobe } from "react-icons/hi";
 import { HiTrophy } from "react-icons/hi2";
 import Slider from 'react-slick';
@@ -199,7 +200,8 @@ export default function AboutUsClient() {
         </div>
       </section>
 
-      {/* Our Values Section */}
+      {/* Our Values Section — hidden entirely when there's no content (SEO audit) */}
+      {values.length > 0 && (
       <section className="relative min-h-screen py-20 px-4 overflow-hidden bg-gray-50">
         <div className="container mx-auto max-w-5xl relative z-10">
           {/* Header */}
@@ -268,8 +270,10 @@ export default function AboutUsClient() {
           }
         `}</style>
       </section>
+      )}
 
-      {/* Our Leadership Section */}
+      {/* Our Leadership Section — hidden entirely when there's no content (SEO audit) */}
+      {leadershipTeam.length > 0 && (
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
@@ -353,8 +357,10 @@ export default function AboutUsClient() {
           .leadership-slider-container .slick-dots li.slick-active button:before { color: #092754 !important; }
         `}</style>
       </section>
+      )}
 
-      {/* Awards and Achievements Section */}
+      {/* Awards and Achievements Section — hidden entirely when there's no content (SEO audit) */}
+      {awards.length > 0 && (
       <section className="py-20 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
@@ -390,6 +396,7 @@ export default function AboutUsClient() {
           )}
         </div>
       </section>
+      )}
 
       {/* Partners Section — CMS-managed logo carousel (hidden when empty) */}
       <Partners partners={partners} />
@@ -404,7 +411,7 @@ export default function AboutUsClient() {
           <p className="text-xl text-gray-200 mb-12 leading-relaxed">
             {s("portfolio_description_en", "portfolio_description_ar", "about", "download_portfolio_desc")}
           </p>
-          {settings?.portfolio_file && (
+          {settings?.portfolio_file ? (
             <button
               onClick={handleDownloadPortfolio}
               className="inline-flex items-center px-8 py-4 bg-white text-[#092754] font-bold text-lg rounded-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg hover:shadow-xl"
@@ -412,6 +419,15 @@ export default function AboutUsClient() {
               <HiDownload className="w-6 h-6 mr-3" />
               {s("portfolio_button_text_en", "portfolio_button_text_ar", "about", "download_button")}
             </button>
+          ) : (
+            // No portfolio PDF uploaded yet — keep the section actionable with a
+            // link to the projects page (SEO audit item 27: section had no action).
+            <Link
+              href={`/${locale}/projects`}
+              className="inline-flex items-center px-8 py-4 bg-white text-[#092754] font-bold text-lg rounded-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg hover:shadow-xl"
+            >
+              {t("thank_you", "explore_projects")}
+            </Link>
           )}
         </div>
       </section>

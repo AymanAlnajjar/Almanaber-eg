@@ -221,7 +221,7 @@
       "nav_news": "News",
       "nav_blogs": "Blogs",
       "nav_careers": "Careers",
-      "copyright": "© 2026 AlMnabr. All rights reserved.",
+      "copyright": "© {year} AlMnabr. All rights reserved.",
       "privacy_policy": "Privacy Policy",
       "terms_of_service": "Terms of Service",
       "cookies_settings": "Cookies Settings"

@@ -25,6 +25,9 @@ interface NewsProps {
 export default function News({ news }: NewsProps) {
   const { t, locale } = useLanguage();
 
+  // SEO audit: never render an empty section with a "View all" button.
+  if (!news || news.length === 0) return null;
+
   return (
     <section className="bg-gray-50 py-16 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">

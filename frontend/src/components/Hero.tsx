@@ -112,10 +112,9 @@ export default function Hero({ slides }: HeroProps) {
         .swiper-button-next:after, .swiper-button-prev:after { font-size: 24px; font-weight: bold; }
         .swiper-container { direction: ltr !important; }
         .swiper-wrapper { direction: ltr !important; }
-        .swiper-slide img {
-          -webkit-backface-visibility: hidden; backface-visibility: hidden;
-          -webkit-transform: translateZ(0); transform: translateZ(0);
-        }
+        /* Forced GPU layers (translateZ/backface-visibility) removed — SEO audit
+           §3.1 flags them as a likely cause of blank composited layers (blank
+           hero) on real mobile browsers. */
         @media (max-width: 767px) {
           .swiper-button-next, .swiper-button-prev { display: none !important; }
         }

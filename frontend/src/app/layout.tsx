@@ -63,10 +63,8 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: SITE_URL,
-    languages: {
-      en: `${SITE_URL}/en`,
-      ar: `${SITE_URL}/ar`,
-    },
+    // Per-locale hreflang intentionally omitted until real [locale] routing exists
+    // (SEO audit §3.2/§3.6) — bare /en and /ar currently 404.
   },
   verification: {
     // Add your Google Search Console verification code here
@@ -77,11 +75,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" dir="rtl">
-      <head>
-        <link rel="alternate" hrefLang="en" href={`${SITE_URL}/en`} />
-        <link rel="alternate" hrefLang="ar" href={`${SITE_URL}/ar`} />
-        <link rel="alternate" hrefLang="x-default" href={SITE_URL} />
-      </head>
       <body className={tajawal.className}>
         <LanguageProvider>
           <ClientLayout>{children}</ClientLayout>

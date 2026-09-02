@@ -9,16 +9,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
     {
+      // No hreflang alternates here yet — bare /en and /ar have no route and 404
+      // (SEO audit §3.6). Restore per-locale alternates once real [locale] routing
+      // (audit §3.2) exists.
       url: SITE_URL,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
-      alternates: {
-        languages: {
-          en: `${SITE_URL}/en`,
-          ar: `${SITE_URL}/ar`,
-        },
-      },
     },
     {
       url: `${SITE_URL}/about`,

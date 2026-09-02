@@ -130,9 +130,11 @@ export default function AboutUsClient() {
       fetch(`${API}/partners`).then(r => r.ok ? r.json() : []).catch(() => []),
     ]).then(([settingsData, valuesData, awardsData, teamData, partnersData]) => {
       setSettings(settingsData);
-      setValues(valuesData);
-      setAwards(awardsData);
-      setLeadershipTeam(teamData);
+      // Guard every list against a non-array API response — mapping over a
+      // non-array would throw and blank the page (SEO audit §3.1, item 4).
+      setValues(Array.isArray(valuesData) ? valuesData : []);
+      setAwards(Array.isArray(awardsData) ? awardsData : []);
+      setLeadershipTeam(Array.isArray(teamData) ? teamData : []);
       setPartners(Array.isArray(partnersData) ? partnersData : []);
     }).finally(() => setLoading(false));
   }, []);

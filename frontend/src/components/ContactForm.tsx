@@ -141,10 +141,22 @@ export default function ContactForm({
       dir={isRTL ? "rtl" : "ltr"}
       noValidate
     >
-      {/* Honeypot — hidden from humans, tempting to bots */}
+      {/* Honeypot — hidden from humans, tempting to bots. Uses the visually-hidden
+          pattern (NOT left:-9999px, which extended the page width and caused the
+          horizontal scroll on service/project/contact pages — SEO audit §item 13). */}
       <div
         aria-hidden="true"
-        style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}
+        style={{
+          position: "absolute",
+          width: "1px",
+          height: "1px",
+          padding: 0,
+          margin: "-1px",
+          overflow: "hidden",
+          clip: "rect(0, 0, 0, 0)",
+          whiteSpace: "nowrap",
+          border: 0,
+        }}
       >
         <label>
           Website

@@ -101,7 +101,7 @@ const jobDetails: JobDetails[] = [
 ];
 
 export default function CareerDetailsClient({ jobId }: { jobId: string }) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const router = useRouter();
   
   const job = jobDetails.find(j => j.id === parseInt(jobId));
@@ -114,8 +114,8 @@ export default function CareerDetailsClient({ jobId }: { jobId: string }) {
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
               {t('career_details', 'job_not_found')}
             </h1>
-            <Link 
-              href="/careers"
+            <Link
+              href={`/${locale}/careers`}
               className="text-blue-600 hover:text-blue-800 underline"
             >
               {t('career_details', 'back_to_careers')}
@@ -127,7 +127,7 @@ export default function CareerDetailsClient({ jobId }: { jobId: string }) {
   }
 
   const handleApply = () => {
-    router.push(`/careers/apply?jobId=${job.id}`);
+    router.push(`/${locale}/careers/apply?jobId=${job.id}`);
   };
 
   return (

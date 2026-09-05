@@ -2,75 +2,48 @@ import { MetadataRoute } from "next";
 
 export const dynamic = "force-dynamic";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://almnaber.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://almnabr.eg";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
+const LOCALES = ["ar", "en"] as const;
+
+// Emit one entry per locale for a given path suffix (e.g. "" for home,
+// "/about"), each carrying hreflang alternates to its sibling locale. Now that
+// real /ar and /en routing exists, these alternates resolve instead of 404ing.
+function localized(
+  path: string,
+  opts: {
+    changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
+    priority: number;
+    lastModified?: Date;
+  }
+): MetadataRoute.Sitemap {
+  return LOCALES.map((l) => ({
+    url: `${SITE_URL}/${l}${path}`,
+    lastModified: opts.lastModified ?? new Date(),
+    changeFrequency: opts.changeFrequency,
+    priority: opts.priority,
+    alternates: {
+      languages: {
+        ar: `${SITE_URL}/ar${path}`,
+        en: `${SITE_URL}/en${path}`,
+        "x-default": `${SITE_URL}/ar${path}`,
+      },
+    },
+  }));
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Static pages
   const staticPages: MetadataRoute.Sitemap = [
-    {
-      // No hreflang alternates here yet — bare /en and /ar have no route and 404
-      // (SEO audit §3.6). Restore per-locale alternates once real [locale] routing
-      // (audit §3.2) exists.
-      url: SITE_URL,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${SITE_URL}/about`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/services`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/careers`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
-    {
-      url: `${SITE_URL}/en/clients`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: `${SITE_URL}/ar/clients`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: `${SITE_URL}/en/projects`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${SITE_URL}/ar/projects`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${SITE_URL}/en/news`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/ar/news`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.8,
-    },
+    ...localized("", { changeFrequency: "weekly", priority: 1 }),
+    ...localized("/about", { changeFrequency: "monthly", priority: 0.8 }),
+    ...localized("/services", { changeFrequency: "monthly", priority: 0.8 }),
+    ...localized("/projects", { changeFrequency: "weekly", priority: 0.9 }),
+    ...localized("/clients", { changeFrequency: "monthly", priority: 0.6 }),
+    ...localized("/news", { changeFrequency: "daily", priority: 0.8 }),
+    ...localized("/blogs", { changeFrequency: "weekly", priority: 0.6 }),
+    ...localized("/careers", { changeFrequency: "weekly", priority: 0.7 }),
+    ...localized("/contact", { changeFrequency: "yearly", priority: 0.5 }),
   ];
 
   // Dynamic project pages
@@ -79,21 +52,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const res = await fetch(`${API_URL}/projects`, { cache: "no-store" });
     if (res.ok) {
       const projects = await res.json();
-      projectPages = projects.flatMap(
-        (project: { id: number }) => [
-          {
-            url: `${SITE_URL}/en/projects/${project.id}`,
-            lastModified: new Date(),
-            changeFrequency: "monthly" as const,
+      projectPages = (Array.isArray(projects) ? projects : []).flatMap(
+        (project: { id: number }) =>
+          localized(`/projects/${project.id}`, {
+            changeFrequency: "monthly",
             priority: 0.7,
-          },
-          {
-            url: `${SITE_URL}/ar/projects/${project.id}`,
-            lastModified: new Date(),
-            changeFrequency: "monthly" as const,
-            priority: 0.7,
-          },
-        ]
+          })
       );
     }
   } catch (error) {
@@ -106,14 +70,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const res = await fetch(`${API_URL}/services`, { cache: "no-store" });
     if (res.ok) {
       const services = await res.json();
-      servicePages = services
+      servicePages = (Array.isArray(services) ? services : [])
         .filter((s: { slug?: string }) => s.slug)
-        .map((service: { slug: string }) => ({
-          url: `${SITE_URL}/services/${service.slug}`,
-          lastModified: new Date(),
-          changeFrequency: "monthly" as const,
-          priority: 0.8,
-        }));
+        .flatMap((service: { slug: string }) =>
+          localized(`/services/${service.slug}`, {
+            changeFrequency: "monthly",
+            priority: 0.8,
+          })
+        );
     }
   } catch (error) {
     console.error("Error fetching services for sitemap:", error);
@@ -125,25 +89,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const res = await fetch(`${API_URL}/news`, { cache: "no-store" });
     if (res.ok) {
       const news = await res.json();
-      newsPages = news.flatMap(
-        (item: { id: number; publish_date?: string }) => [
-          {
-            url: `${SITE_URL}/en/news/${item.id}`,
+      newsPages = (Array.isArray(news) ? news : []).flatMap(
+        (item: { id: number; publish_date?: string }) =>
+          localized(`/news/${item.id}`, {
+            changeFrequency: "monthly",
+            priority: 0.6,
             lastModified: item.publish_date
               ? new Date(item.publish_date)
               : new Date(),
-            changeFrequency: "monthly" as const,
-            priority: 0.6,
-          },
-          {
-            url: `${SITE_URL}/ar/news/${item.id}`,
-            lastModified: item.publish_date
-              ? new Date(item.publish_date)
-              : new Date(),
-            changeFrequency: "monthly" as const,
-            priority: 0.6,
-          },
-        ]
+          })
       );
     }
   } catch (error) {

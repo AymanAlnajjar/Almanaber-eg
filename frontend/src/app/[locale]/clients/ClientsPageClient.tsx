@@ -106,7 +106,7 @@ export default function ClientsPageClient({ clients }: ClientsPageClientProps) {
           <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
             {t("clients_page", "cta_description")}
           </p>
-          <Link href="/contact">
+          <Link href={`/${locale}/contact`}>
             <button className="bg-[#092754] text-white px-8 py-3 rounded-lg hover:bg-[#1a2950] transition-colors duration-300 text-lg font-medium">
               {t("clients_page", "contact_us")}
             </button>

@@ -75,7 +75,7 @@ export default function ServicesPageClient() {
               return (
                 <Link
                   key={service.id}
-                  href={`/services/${service.slug || service.id}`}
+                  href={`/${locale}/services/${service.slug || service.id}`}
                   className={`group flex flex-col items-center gap-8 md:gap-14 ${
                     even ? "md:flex-row" : "md:flex-row-reverse"
                   }`}

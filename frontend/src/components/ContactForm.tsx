@@ -120,8 +120,12 @@ export default function ContactForm({
       return;
     }
 
-    // Success — redirect to the thank-you page.
-    router.push(successRedirect);
+    // Success — redirect to the thank-you page. Prefix with the current locale
+    // unless the caller already passed a locale-prefixed path.
+    const localized = /^\/(ar|en)(\/|$)/.test(successRedirect)
+      ? successRedirect
+      : `/${locale}${successRedirect}`;
+    router.push(localized);
   };
 
   const wrapperClass =

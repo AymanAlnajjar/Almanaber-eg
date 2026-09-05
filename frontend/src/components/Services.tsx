@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
+import { CtaLink } from "@/components/ui/Button";
 
 interface Service {
   id: number;
@@ -80,12 +81,9 @@ export default function Services({ services }: ServicesProps) {
         </div>
 
         <div className="text-center mt-16">
-          <Link
-            href={`/${locale}/services`}
-            className="inline-block border border-[#092754] text-[#092754] px-6 py-2 rounded hover:bg-[#092754] hover:text-white transition-colors duration-200 font-semibold"
-          >
+          <CtaLink href={`/${locale}/services`} variant="outline">
             {t("services", "learn_more")}
-          </Link>
+          </CtaLink>
         </div>
       </div>
 

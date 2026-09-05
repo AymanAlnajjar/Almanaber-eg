@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/context/LanguageContext";
-import Link from "next/link";
+import { CtaLink } from "@/components/ui/Button";
 import { FiArrowLeft, FiArrowRight, FiCheckCircle } from "react-icons/fi";
 
 export default function ThankYouClient() {
@@ -31,19 +31,13 @@ export default function ThankYouClient() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href={`/${locale}`}
-            className="inline-flex items-center justify-center gap-2 bg-[#092754] hover:bg-[#0b3570] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
-          >
+          <CtaLink href={`/${locale}`} variant="primary">
             {isRTL ? <FiArrowRight /> : <FiArrowLeft />}
             {t("thank_you", "back_home")}
-          </Link>
-          <Link
-            href={`/${locale}/projects`}
-            className="inline-flex items-center justify-center gap-2 border-2 border-[#092754] text-[#092754] hover:bg-[#092754] hover:text-white font-semibold px-6 py-3 rounded-lg transition-colors"
-          >
+          </CtaLink>
+          <CtaLink href={`/${locale}/projects`} variant="outline">
             {t("thank_you", "explore_projects")}
-          </Link>
+          </CtaLink>
         </div>
       </div>
     </div>

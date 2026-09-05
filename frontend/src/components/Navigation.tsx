@@ -106,7 +106,7 @@ export default function Nav() {
             </button>
             <Link
               href={`/${locale}/contact`}
-              className="bg-blue-600 text-white px-4 py-2 2xl:px-6 2xl:py-3 4k:px-10 4k:py-5 rounded-md text-sm 2xl:text-lg 4k:text-2xl font-medium hover:bg-blue-700"
+              className="bg-[#092754] text-white px-4 py-2 2xl:px-6 2xl:py-3 4k:px-10 4k:py-5 rounded-md text-sm 2xl:text-lg 4k:text-2xl font-medium hover:bg-[#0b3570]"
             >
               {t("navbar", "contact_us")}
             </Link>
@@ -135,7 +135,7 @@ export default function Nav() {
                     <Link
                       key={tab.key}
                       href={tab.href}
-                      className="text-white text-lg font-medium whitespace-nowrap py-2 px-2 rounded hover:bg-blue-700"
+                      className="text-white text-lg font-medium whitespace-nowrap py-2 px-2 rounded hover:bg-[#0b3570]"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {t("navbar", tab.key)}
@@ -145,13 +145,13 @@ export default function Nav() {
                 <div className="flex flex-col gap-4 mt-8">
                   <button
                     onClick={() => { switchLocale(); setIsMenuOpen(false); }}
-                    className="text-white hover:text-gray-100 px-3 py-2 text-md font-medium rounded bg-blue-600 hover:bg-blue-700"
+                    className="text-white hover:text-gray-100 px-3 py-2 text-md font-medium rounded bg-[#092754] hover:bg-[#0b3570]"
                   >
                     {locale === "en" ? t("navbar", "language_ar") : t("navbar", "language_en")}
                   </button>
                   <Link
                     href={`/${locale}/contact`}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md text-md font-medium hover:bg-blue-700 text-center"
+                    className="bg-[#092754] text-white px-4 py-2 rounded-md text-md font-medium hover:bg-[#0b3570] text-center"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {t("navbar", "contact_us")}

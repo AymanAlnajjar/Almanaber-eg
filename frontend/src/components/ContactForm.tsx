@@ -5,6 +5,7 @@ import { apiClient } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { FiSend } from "react-icons/fi";
+import { CtaButton } from "@/components/ui/Button";
 
 interface ContactFormProps {
   /**
@@ -263,14 +264,15 @@ export default function ContactForm({
       )}
 
       <div className="mt-6">
-        <button
+        <CtaButton
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center justify-center gap-2 bg-[#092754] hover:bg-[#0b3570] disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold px-8 py-3 rounded-lg transition-colors w-full md:w-auto"
+          size="lg"
+          className="w-full md:w-auto"
         >
           <FiSend />
           {submitting ? t("contact_form", "submitting") : t("contact_form", "submit")}
-        </button>
+        </CtaButton>
       </div>
 
       <p className="mt-3 text-xs text-gray-500">

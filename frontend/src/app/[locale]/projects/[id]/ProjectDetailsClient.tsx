@@ -47,7 +47,7 @@ export default function ProjectDetailsClient({ project, locale }: ProjectDetails
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
         <Link
           href={`/${locale}/projects`}
-          className="inline-flex items-center gap-2 text-[#1a2950] hover:text-blue-600 transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-[#1a2950] hover:text-[#0b3570] transition-colors mb-4"
         >
           <FiArrowLeft />
           {t('project_details', 'back_to_projects')}

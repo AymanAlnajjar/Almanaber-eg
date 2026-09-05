@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { CtaLink } from "@/components/ui/Button";
 import { useLanguage } from "@/context/LanguageContext";
 import { useCounter } from "./useCounter";
 import { useInView } from "./useInView";
@@ -33,12 +33,13 @@ export default function Stats({ stats }: StatsProps) {
             <p className="text-white text-lg 2xl:text-xl 4k:text-2xl leading-relaxed mb-6 2xl:mb-10 4k:mb-14">
               {t("stats", "description")}
             </p>
-            <Link
+            <CtaLink
               href={`/${locale}/about`}
-              className="inline-flex items-center gap-2 border-2 border-white text-white px-6 py-2.5 rounded font-semibold hover:bg-white hover:text-[#092754] transition-colors duration-200 text-base 2xl:text-lg 4k:text-2xl"
+              variant="outlineLight"
+              className="2xl:text-lg 4k:text-2xl"
             >
               {t("stats", "button")} <span aria-hidden>&rsaquo;</span>
-            </Link>
+            </CtaLink>
           </div>
 
           <div className="lg:w-2/3">

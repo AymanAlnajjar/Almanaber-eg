@@ -48,7 +48,7 @@ export default function BlogDetailsClient({ blog, locale }: Props) {
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-6">
         <Link
           href={`/${locale}/blogs`}
-          className="inline-flex items-center gap-2 text-[#1a2950] hover:text-blue-600 transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-[#1a2950] hover:text-[#0b3570] transition-colors mb-8"
         >
           <FiArrowLeft />
           {t("blog_details", "back_to_blogs")}

@@ -196,7 +196,7 @@ export default function ApplyPageClient() {
             </h1>
             <button
               onClick={() => router.back()}
-              className="text-blue-600 hover:text-blue-800 underline"
+              className="text-[#092754] hover:text-[#0b3570] underline"
             >
               {t('apply', 'back_to_careers')}
             </button>
@@ -217,7 +217,7 @@ export default function ApplyPageClient() {
             </div>
             <button
               onClick={() => router.push(`/${locale}/careers`)}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className="bg-[#092754] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#0b3570] transition-colors"
             >
               {t('apply', 'back_to_careers')}
             </button>
@@ -234,7 +234,7 @@ export default function ApplyPageClient() {
         <div className="mb-8">
           <button
             onClick={() => router.back()}
-            className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+            className="flex items-center text-[#092754] hover:text-[#0b3570] transition-colors"
           >
             <HiArrowLeft className="w-5 h-5 mr-2" />
             {t('apply', 'back_to_job')}
@@ -454,7 +454,7 @@ export default function ApplyPageClient() {
                         />
                         <label
                           htmlFor="resume-upload"
-                          className="cursor-pointer text-blue-600 hover:text-blue-800"
+                          className="cursor-pointer text-[#092754] hover:text-[#0b3570]"
                         >
                           {t('apply', 'upload_resume')}
                         </label>
@@ -494,7 +494,7 @@ export default function ApplyPageClient() {
                         />
                         <label
                           htmlFor="portfolio-upload"
-                          className="cursor-pointer text-blue-600 hover:text-blue-800"
+                          className="cursor-pointer text-[#092754] hover:text-[#0b3570]"
                         >
                           {t('apply', 'upload_portfolio')}
                         </label>
@@ -610,7 +610,7 @@ export default function ApplyPageClient() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-[#092754] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#0b3570] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? t('apply', 'submitting') : t('apply', 'submit_application')}
               </button>

@@ -116,7 +116,7 @@ export default function CareerDetailsClient({ jobId }: { jobId: string }) {
             </h1>
             <Link
               href={`/${locale}/careers`}
-              className="text-blue-600 hover:text-blue-800 underline"
+              className="text-[#092754] hover:text-[#0b3570] underline"
             >
               {t('career_details', 'back_to_careers')}
             </Link>
@@ -137,7 +137,7 @@ export default function CareerDetailsClient({ jobId }: { jobId: string }) {
         <div className="mb-8">
           <button
             onClick={() => router.back()}
-            className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+            className="flex items-center text-[#092754] hover:text-[#0b3570] transition-colors"
           >
             <HiArrowLeft className="w-5 h-5 mr-2" />
             {t('career_details', 'back_to_careers')}
@@ -158,19 +158,19 @@ export default function CareerDetailsClient({ jobId }: { jobId: string }) {
               {/* Job Meta Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="flex items-center text-gray-600">
-                  <HiLocationMarker className="w-5 h-5 mr-2 text-blue-600" />
+                  <HiLocationMarker className="w-5 h-5 mr-2 text-[#092754]" />
                   <span>{t('careers', job.locationKey)}</span>
                 </div>
                 <div className="flex items-center text-gray-600">
-                  <HiBriefcase className="w-5 h-5 mr-2 text-blue-600" />
+                  <HiBriefcase className="w-5 h-5 mr-2 text-[#092754]" />
                   <span>{t('careers', job.departmentKey)}</span>
                 </div>
                 <div className="flex items-center text-gray-600">
-                  <HiClock className="w-5 h-5 mr-2 text-blue-600" />
+                  <HiClock className="w-5 h-5 mr-2 text-[#092754]" />
                   <span>{t('careers', job.typeKey)}</span>
                 </div>
                 <div className="flex items-center text-gray-600">
-                  <HiAcademicCap className="w-5 h-5 mr-2 text-blue-600" />
+                  <HiAcademicCap className="w-5 h-5 mr-2 text-[#092754]" />
                   <span>{job.experienceLevel}</span>
                 </div>
               </div>
@@ -180,7 +180,7 @@ export default function CareerDetailsClient({ jobId }: { jobId: string }) {
             <div className="mt-6 lg:mt-0 lg:ml-8">
               <button
                 onClick={handleApply}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors w-full lg:w-auto"
+                className="bg-[#092754] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#0b3570] transition-colors w-full lg:w-auto"
               >
                 {t('career_details', 'apply_now')}
               </button>
@@ -260,7 +260,7 @@ export default function CareerDetailsClient({ jobId }: { jobId: string }) {
             <div className="lg:hidden">
               <button
                 onClick={handleApply}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors w-full"
+                className="bg-[#092754] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#0b3570] transition-colors w-full"
               >
                 {t('career_details', 'apply_now')}
               </button>

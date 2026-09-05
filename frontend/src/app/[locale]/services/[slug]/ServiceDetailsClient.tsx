@@ -48,7 +48,7 @@ export default function ServiceDetailsClient({ service }: Props) {
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-6">
         <Link
           href={`/${locale}/services`}
-          className="inline-flex items-center gap-2 text-[#092754] hover:text-blue-600 transition-colors mb-6"
+          className="inline-flex items-center gap-2 text-[#092754] hover:text-[#0b3570] transition-colors mb-6"
         >
           {isArabic ? <FiArrowRight /> : <FiArrowLeft />}
           {t("service_details", "back_to_services")}

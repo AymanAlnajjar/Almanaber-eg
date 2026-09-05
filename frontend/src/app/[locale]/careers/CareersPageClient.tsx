@@ -145,7 +145,7 @@ export default function CareersPageClient() {
               {t('careers_filters', 'note_text')}{' '}
               <Link
                 href={`/${locale}/careers/apply`}
-                className="text-[#2563EB] underline hover:text-[#1D4ED8] transition-colors"
+                className="text-[#092754] underline hover:text-[#0b3570] transition-colors"
               >
                 {t('careers_filters', 'apply_here')}
               </Link>
@@ -169,7 +169,7 @@ export default function CareersPageClient() {
                       type="checkbox"
                       checked={selectedLocations.includes(location.key)}
                       onChange={() => handleLocationToggle(location.key)}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-[#092754] border-gray-300 rounded focus:ring-[#092754]"
                     />
                     <div className={`w-3 h-3 rounded-full ${location.color} ml-2 mr-2`}></div>
                     <span className="text-gray-700">{location.label}</span>

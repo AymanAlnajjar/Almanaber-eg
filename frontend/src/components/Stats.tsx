@@ -34,7 +34,7 @@ export default function Stats({ stats }: StatsProps) {
               {t("stats", "description")}
             </p>
             <Link
-              href="/about"
+              href={`/${locale}/about`}
               className="inline-flex items-center gap-2 border-2 border-white text-white px-6 py-2.5 rounded font-semibold hover:bg-white hover:text-[#092754] transition-colors duration-200 text-base 2xl:text-lg 4k:text-2xl"
             >
               {t("stats", "button")} <span aria-hidden>&rsaquo;</span>

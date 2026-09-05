@@ -3,17 +3,27 @@
 import { useLanguage } from "@/context/LanguageContext";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
 
 export default function Nav() {
-  const { t, locale, setLocale } = useLanguage();
+  const { t, locale } = useLanguage();
   const isRTL = locale === "ar";
   const pathname = usePathname();
-  const isHome = pathname === "/";
+  const router = useRouter();
+  // Home is now the locale root: /ar or /en (optionally with a trailing slash).
+  const isHome = /^\/(ar|en)\/?$/.test(pathname);
   const [scrolled, setScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Switch language by navigating to the same page under the other locale
+  // prefix, so the URL stays the source of truth.
+  const switchLocale = () => {
+    const next = locale === "en" ? "ar" : "en";
+    const rest = pathname.replace(/^\/(ar|en)(?=\/|$)/, "");
+    router.push(`/${next}${rest || ""}`);
+  };
 
   // Listen for scroll to update navbar background
   useEffect(() => {
@@ -45,7 +55,7 @@ export default function Nav() {
         <div className="flex items-center h-16 justify-between w-full">
           {/* Logo */}
           <div className={`flex-1 flex ${isRTL ? "justify-start" : "justify-start"}`}>
-            <Link href="/" className="text-2xl font-bold text-white">
+            <Link href={`/${locale}`} className="text-2xl font-bold text-white">
               <Image src="/almnabr-logo.png" alt="Almnabr logo" width={128} height={128} className="w-16 2xl:w-24 4k:w-32 h-auto" />
             </Link>
           </div>
@@ -67,13 +77,13 @@ export default function Nav() {
           <div className="flex-1 justify-center hidden md:flex">
             <div className="flex space-x-4">
               {[
-                { key: "about", href: "/about" },
-                { key: "services", href: "/services" },
+                { key: "about", href: `/${locale}/about` },
+                { key: "services", href: `/${locale}/services` },
                 { key: "projects", href: `/${locale}/projects` },
                 { key: "clients", href: `/${locale}/clients` },
                 { key: "news", href: `/${locale}/news` },
                 { key: "blogs", href: `/${locale}/blogs` },
-                { key: "careers", href: "/careers" },
+                { key: "careers", href: `/${locale}/careers` },
               ].map((tab) => (
                 <Link
                   key={tab.key}
@@ -89,13 +99,13 @@ export default function Nav() {
           {/* Language toggle & Contact Us */}
           <div className={`flex-1 flex ${isRTL ? "justify-end" : "justify-end"} items-center gap-2 hidden md:flex`}>
             <button
-              onClick={() => setLocale(locale === "en" ? "ar" : "en")}
+              onClick={switchLocale}
               className="text-white hover:text-gray-100 px-3 py-1 text-sm 2xl:text-lg 4k:text-2xl font-medium mx-2 2xl:px-5 4k:px-8"
             >
               {locale === "en" ? t("navbar", "language_ar") : t("navbar", "language_en")}
             </button>
             <Link
-              href="/contact"
+              href={`/${locale}/contact`}
               className="bg-blue-600 text-white px-4 py-2 2xl:px-6 2xl:py-3 4k:px-10 4k:py-5 rounded-md text-sm 2xl:text-lg 4k:text-2xl font-medium hover:bg-blue-700"
             >
               {t("navbar", "contact_us")}
@@ -114,13 +124,13 @@ export default function Nav() {
                 </button>
                 <nav className="flex flex-col gap-4">
                   {[
-                    { key: "about", href: "/about" },
-                    { key: "services", href: "/services" },
+                    { key: "about", href: `/${locale}/about` },
+                    { key: "services", href: `/${locale}/services` },
                     { key: "projects", href: `/${locale}/projects` },
                     { key: "clients", href: `/${locale}/clients` },
                     { key: "news", href: `/${locale}/news` },
                     { key: "blogs", href: `/${locale}/blogs` },
-                    { key: "careers", href: "/careers" },
+                    { key: "careers", href: `/${locale}/careers` },
                   ].map((tab) => (
                     <Link
                       key={tab.key}
@@ -134,13 +144,13 @@ export default function Nav() {
                 </nav>
                 <div className="flex flex-col gap-4 mt-8">
                   <button
-                    onClick={() => { setLocale(locale === "en" ? "ar" : "en"); setIsMenuOpen(false); }}
+                    onClick={() => { switchLocale(); setIsMenuOpen(false); }}
                     className="text-white hover:text-gray-100 px-3 py-2 text-md font-medium rounded bg-blue-600 hover:bg-blue-700"
                   >
                     {locale === "en" ? t("navbar", "language_ar") : t("navbar", "language_en")}
                   </button>
                   <Link
-                    href="/contact"
+                    href={`/${locale}/contact`}
                     className="bg-blue-600 text-white px-4 py-2 rounded-md text-md font-medium hover:bg-blue-700 text-center"
                     onClick={() => setIsMenuOpen(false)}
                   >

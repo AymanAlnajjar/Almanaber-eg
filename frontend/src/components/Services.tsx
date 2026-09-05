@@ -45,7 +45,7 @@ export default function Services({ services }: ServicesProps) {
             services.map((service) => (
               <Link
                 key={service.id}
-                href={`/services/${service.slug || service.id}`}
+                href={`/${locale}/services/${service.slug || service.id}`}
                 className="service-card"
                 style={{
                   backgroundImage: service.background_image
@@ -81,7 +81,7 @@ export default function Services({ services }: ServicesProps) {
 
         <div className="text-center mt-16">
           <Link
-            href="/services"
+            href={`/${locale}/services`}
             className="inline-block border border-[#092754] text-[#092754] px-6 py-2 rounded hover:bg-[#092754] hover:text-white transition-colors duration-200 font-semibold"
           >
             {t("services", "learn_more")}

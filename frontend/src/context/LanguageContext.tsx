@@ -1,18 +1,33 @@
 "use client";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import en from "../locales/en.json";
 import ar from "../locales/ar.json";
 
 const translations = { en, ar };
+export type Locale = "en" | "ar";
 
 const LanguageContext = createContext({
-  locale: "en",
-  setLocale: (() => {}) as React.Dispatch<React.SetStateAction<"en" | "ar">>,
+  locale: "ar" as Locale,
+  setLocale: (() => {}) as React.Dispatch<React.SetStateAction<Locale>>,
   t: (label: string, key: string) => key,
 });
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocale] = useState<"en" | "ar">("ar");
+export function LanguageProvider({
+  children,
+  initialLocale = "ar",
+}: {
+  children: React.ReactNode;
+  initialLocale?: Locale;
+}) {
+  const [locale, setLocale] = useState<Locale>(initialLocale);
+
+  // The locale now comes from the URL ([locale] segment). When the user
+  // navigates between /ar and /en, the [locale] layout re-renders and passes
+  // the new value down here, keeping the client context in sync with the URL.
+  useEffect(() => {
+    setLocale(initialLocale);
+  }, [initialLocale]);
+
   const t = (label: string, key: string) => {
     const group = ((translations[locale] as unknown) as Array<{ label: string; translations: Record<string, string> }>).find((g) => g.label === label);
     if (group && group.translations && key in group.translations) {
@@ -27,4 +42,4 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useLanguage = () => useContext(LanguageContext); 
+export const useLanguage = () => useContext(LanguageContext);

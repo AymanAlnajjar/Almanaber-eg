@@ -143,8 +143,8 @@ export default function CareersPageClient() {
             </div>
             <p className="text-[#D97706] text-sm">
               {t('careers_filters', 'note_text')}{' '}
-              <Link 
-                href="/careers/apply" 
+              <Link
+                href={`/${locale}/careers/apply`}
                 className="text-[#2563EB] underline hover:text-[#1D4ED8] transition-colors"
               >
                 {t('careers_filters', 'apply_here')}
@@ -278,8 +278,8 @@ export default function CareersPageClient() {
                       </p>
                     </div>
                     <div className="mt-4 md:mt-0">
-                      <Link 
-                        href={`/careers/${job.id}`}
+                      <Link
+                        href={`/${locale}/careers/${job.id}`}
                         className="text-[#0a2551] font-medium hover:underline flex items-center"
                       >
                         {t('careers', 'learn_more')} &gt;

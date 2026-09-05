@@ -99,7 +99,7 @@ interface FormErrors {
 }
 
 export default function ApplyPageClient() {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -216,7 +216,7 @@ export default function ApplyPageClient() {
               <p>{t('apply', 'application_submitted_message')}</p>
             </div>
             <button
-              onClick={() => router.push('/careers')}
+              onClick={() => router.push(`/${locale}/careers`)}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
             >
               {t('apply', 'back_to_careers')}

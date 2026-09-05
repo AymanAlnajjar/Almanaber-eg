@@ -17,10 +17,7 @@ name: Build and Publish Docker Images
 
 on:
   push:
-    # feat/locale-routing is temporarily included to build a test image
-    # (tagged :feat-locale-routing; :latest stays gated on the default branch).
-    # Remove this branch before merging to main.
-    branches: [main, feat/locale-routing]
+    branches: [main]
     tags: ['v*.*.*']
   workflow_dispatch: {} # allow manual runs from the Actions tab
 

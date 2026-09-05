@@ -20,24 +20,29 @@ async function getService(id: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const resolvedParams = await params;
+  const isAr = resolvedParams.locale === "ar";
   const service = await getService(resolvedParams.slug);
 
   if (!service) {
-    return { title: "Service Not Found" };
+    return { title: isAr ? "الخدمة غير موجودة" : "Service Not Found" };
   }
 
   const seo = service.seo || {};
 
-  // Default to English for metadata (the site is publicly served under /services)
-  const title = seo.meta_title_en || service.title_en;
+  // Use the locale's SEO fields, falling back to the localized service content.
+  const title =
+    (isAr ? seo.meta_title_ar : seo.meta_title_en) ||
+    (isAr ? service.title_ar : service.title_en);
   const description =
-    seo.meta_description_en ||
-    service.description_en ||
-    `${service.title_en} – engineering consultancy service by AlMnaber.`;
-  const keywords = seo.meta_keywords_en || "";
+    (isAr ? seo.meta_description_ar : seo.meta_description_en) ||
+    (isAr ? service.description_ar : service.description_en) ||
+    (isAr
+      ? `${service.title_ar} – خدمة استشارات هندسية من المنابر.`
+      : `${service.title_en} – engineering consultancy service by AlMnaber.`);
+  const keywords = (isAr ? seo.meta_keywords_ar : seo.meta_keywords_en) || "";
   const ogImage = seo.og_image || service.background_image;
 
   return {

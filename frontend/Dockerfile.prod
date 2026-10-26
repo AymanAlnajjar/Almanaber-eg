@@ -3,7 +3,7 @@
 # you must rebuild this image: `docker compose -f docker-compose.prod.yml build frontend`.
 
 # ---- Build stage ----
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
@@ -26,7 +26,7 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
 RUN npm run build
 
 # ---- Runtime stage ----
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS runner
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 ENV NODE_ENV=production \

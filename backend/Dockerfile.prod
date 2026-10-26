@@ -7,7 +7,7 @@
 # --------------------------------------------------------------------------
 # Builder — has the compiler toolchain and -dev headers (discarded afterwards)
 # --------------------------------------------------------------------------
-FROM php:8.3-fpm-bookworm AS builder
+FROM php:8.3.36-fpm-bookworm AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git unzip \
@@ -34,7 +34,7 @@ RUN composer dump-autoload --optimize --no-dev
 # --------------------------------------------------------------------------
 # Runtime — slim: only runtime shared libs + web server + compiled artifacts
 # --------------------------------------------------------------------------
-FROM php:8.3-fpm-bookworm AS runtime
+FROM php:8.3.36-fpm-bookworm AS runtime
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx supervisor \

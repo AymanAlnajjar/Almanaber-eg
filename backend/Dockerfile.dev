@@ -2,7 +2,7 @@
 # Source code and vendor/ are mounted at runtime (see docker-compose.yml),
 # so this image only provides the PHP runtime + Composer. Dependency install,
 # migrations and seeding happen in the compose `command`.
-FROM php:8.3-cli
+FROM php:8.3.36-cli
 
 RUN apt-get update && apt-get install -y \
     git \

@@ -208,6 +208,7 @@
       "pmo_pmc_services": "إدارة المشاريع والاستشارات",
       "projects_supervision_services": "إشراف المشاريع",
       "infrastructure_services": "البنية التحتية",
+      "projects_unavailable": "تعذّر تحميل المشاريع. يرجى تحديث الصفحة والمحاولة مرة أخرى.",
       "no_projects_found": "لم يتم العثور على مشاريع تطابق معاييرك."
     }
   },

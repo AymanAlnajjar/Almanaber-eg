@@ -56,24 +56,11 @@ class ProjectResource extends Resource
                                     ->label('Location (English)')
                                     ->required()
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('project_area_en')
-                                    ->label('Project Area (English)')
-                                    ->required()
-                                    ->maxLength(255),
                                 Forms\Components\Textarea::make('mission_en')
                                     ->label('Mission/Description (English)')
                                     ->required()
                                     ->rows(4)
                                     ->columnSpanFull(),
-                                Forms\Components\Textarea::make('components_en')
-                                    ->label('Components (English)')
-                                    ->required()
-                                    ->rows(4)
-                                    ->columnSpanFull(),
-                                Forms\Components\TextInput::make('client_en')
-                                    ->label('Client Name (English)')
-                                    ->required()
-                                    ->maxLength(255),
                             ]),
                         Forms\Components\Tabs\Tab::make('Arabic')
                             ->schema([
@@ -89,24 +76,11 @@ class ProjectResource extends Resource
                                     ->label('Location (Arabic)')
                                     ->required()
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('project_area_ar')
-                                    ->label('Project Area (Arabic)')
-                                    ->required()
-                                    ->maxLength(255),
                                 Forms\Components\Textarea::make('mission_ar')
                                     ->label('Mission/Description (Arabic)')
                                     ->required()
                                     ->rows(4)
                                     ->columnSpanFull(),
-                                Forms\Components\Textarea::make('components_ar')
-                                    ->label('Components (Arabic)')
-                                    ->required()
-                                    ->rows(4)
-                                    ->columnSpanFull(),
-                                Forms\Components\TextInput::make('client_ar')
-                                    ->label('Client Name (Arabic)')
-                                    ->required()
-                                    ->maxLength(255),
                             ]),
                         Forms\Components\Tabs\Tab::make('Project Details')
                             ->schema([

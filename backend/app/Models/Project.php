@@ -6,6 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
+    // Keep the legacy non-null columns compatible with new projects.
+    protected $attributes = [
+        'project_area_en' => '',
+        'project_area_ar' => '',
+        'components_en' => '',
+        'components_ar' => '',
+        'client_en' => '',
+        'client_ar' => '',
+    ];
+
     protected $fillable = [
         'name_en',
         'name_ar',

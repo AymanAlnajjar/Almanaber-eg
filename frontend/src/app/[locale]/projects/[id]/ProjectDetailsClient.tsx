@@ -15,14 +15,8 @@ interface Project {
   area_ar: string;
   location_en: string;
   location_ar: string;
-  project_area_en: string;
-  project_area_ar: string;
   mission_en: string;
   mission_ar: string;
-  components_en: string;
-  components_ar: string;
-  client_en: string;
-  client_ar: string;
   types?: string[];
   services?: string[];
   main_image: string;
@@ -114,24 +108,6 @@ export default function ProjectDetailsClient({ project, locale }: ProjectDetails
                   <h3 className="font-bold text-[#1a2950] mb-2">
                     {t('project_details', 'project_name')}: {locale === 'ar' ? project.name_ar : project.name_en}
                   </h3>
-                </div>
-
-                <div>
-                  <h3 className="font-bold text-[#1a2950] mb-2">
-                    {t('project_details', 'client')}:
-                  </h3>
-                  <p className="text-gray-700">
-                    {locale === 'ar' ? project.client_ar : project.client_en}
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="font-bold text-[#1a2950] mb-2">
-                    {t('project_details', 'project_area')}:
-                  </h3>
-                  <p className="text-gray-700">
-                    {locale === 'ar' ? project.project_area_ar : project.project_area_en}
-                  </p>
                 </div>
               </div>
             </div>

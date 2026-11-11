@@ -1,6 +1,8 @@
 import { API_BASE_URL } from '@/lib/api';
 import ProjectsPageClient, { type Project, type ServiceOption } from './ProjectsPageClient';
 
+export const dynamic = 'force-dynamic';
+
 async function fetchList<T>(path: string): Promise<T[] | null> {
   try {
     const response = await fetch(`${API_BASE_URL.replace(/\/$/, '')}/${path}`, {

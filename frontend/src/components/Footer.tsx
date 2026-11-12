@@ -6,7 +6,7 @@ import { useLanguage } from '@/context/LanguageContext';
 
 const socialLinks = [
   { icon: FaFacebookF, href: 'https://www.facebook.com/almanabercairo', label: 'Facebook' },
-  { icon: FaInstagram, href: 'https://www.instagram.com/almnabr_ce/', label: 'Instagram' },
+  { icon: FaInstagram, href: 'https://www.instagram.com/almanabercairo/', label: 'Instagram' },
   { icon: FaLinkedinIn, href: 'https://www.linkedin.com/company/almanaberconsultingengineering/posts/?feedView=all', label: 'LinkedIn' },
   { icon: FaEnvelope, href: 'mailto:info@almnabr.eg', label: 'info@almnabr.eg' },
 ];

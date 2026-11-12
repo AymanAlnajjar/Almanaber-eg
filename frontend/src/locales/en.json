@@ -557,6 +557,7 @@
     "label": "common",
     "translations": {
       "loading": "Loading...",
+      "services_unavailable": "Services could not be loaded. Please refresh the page to try again.",
       "no_services": "No services available at the moment.",
       "error": "Something went wrong. Please try again."
     }

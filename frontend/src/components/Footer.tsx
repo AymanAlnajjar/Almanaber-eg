@@ -1,19 +1,15 @@
 "use client"
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaFacebookF, FaInstagram, FaXTwitter, FaLinkedinIn, FaYoutube } from 'react-icons/fa6';
+import { FaEnvelope, FaFacebookF, FaInstagram, FaLinkedinIn } from 'react-icons/fa6';
 import { useLanguage } from '@/context/LanguageContext';
 
-// Real profile URLs go here. Entries left empty are NOT rendered — a dead social
-// bar (href="#") hurts credibility and accessibility (SEO audit P1), so icons
-// only appear once a real URL is filled in.
 const socialLinks = [
-  { icon: <FaFacebookF />, href: '', label: 'Facebook' },
-  { icon: <FaInstagram />, href: '', label: 'Instagram' },
-  { icon: <FaXTwitter />, href: '', label: 'X (Twitter)' },
-  { icon: <FaLinkedinIn />, href: '', label: 'LinkedIn' },
-  { icon: <FaYoutube />, href: '', label: 'YouTube' },
-].filter((s) => s.href && s.href !== '#');
+  { icon: FaFacebookF, href: 'https://www.facebook.com/almanabercairo', label: 'Facebook' },
+  { icon: FaInstagram, href: 'https://www.instagram.com/almnabr_ce/', label: 'Instagram' },
+  { icon: FaLinkedinIn, href: 'https://www.linkedin.com/company/almanaberconsultingengineering/posts/?feedView=all', label: 'LinkedIn' },
+  { icon: FaEnvelope, href: 'mailto:info@almnabr.eg', label: 'info@almnabr.eg' },
+];
 
 export default function Footer() {
   const { t, locale } = useLanguage();
@@ -43,16 +39,20 @@ export default function Footer() {
             </Link>
           ))}
         </nav>
-        {/* Social Icons — only rendered when at least one real URL is configured */}
-        {socialLinks.length > 0 && (
-          <div className="flex gap-4">
-            {socialLinks.map((s, i) => (
-              <a key={i} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} className="text-white 2xl:text-lg 4k:text-2xl hover:text-blue-300">
-                {s.icon}
-              </a>
-            ))}
-          </div>
-        )}
+        <div className="flex shrink-0 flex-wrap justify-center gap-2">
+          {socialLinks.map(({ icon: Icon, href, label }) => (
+            <a
+              key={href}
+              href={href}
+              target={href.startsWith('https:') ? '_blank' : undefined}
+              rel={href.startsWith('https:') ? 'noopener noreferrer' : undefined}
+              aria-label={label}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/40 text-lg text-white transition-colors hover:bg-white hover:text-[#0a2551] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              <Icon aria-hidden="true" />
+            </a>
+          ))}
+        </div>
       </div>
       <hr className="my-8 border-gray-300" />
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-white text-sm">
@@ -65,4 +65,4 @@ export default function Footer() {
       </div>
     </footer>
   );
-} 
+}

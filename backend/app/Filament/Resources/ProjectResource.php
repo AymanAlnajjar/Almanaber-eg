@@ -113,12 +113,16 @@ class ProjectResource extends Resource
                                     ->columnSpanFull(),
                                 Forms\Components\FileUpload::make('gallery_images')
                                     ->label('Gallery Images')
+                                    ->helperText('Select or drag in up to 30 images (12 MB each) and wait for all uploads to finish before saving.')
                                     ->image()
                                     ->multiple()
+                                    ->maxParallelUploads(1)
+                                    ->appendFiles()
                                     ->directory('projects/gallery')
                                     ->reorderable()
                                     ->imageEditor()
-                                    ->maxFiles(10)
+                                    ->maxSize(12288)
+                                    ->maxFiles(30)
                                     ->columnSpanFull(),
                             ]),
                         Forms\Components\Tabs\Tab::make('Display Settings')

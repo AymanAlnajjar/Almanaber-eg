@@ -1,5 +1,8 @@
 import { Metadata } from "next";
-import ServicesPageClient from "./ServicesPageClient";
+import { API_BASE_URL } from "@/lib/api";
+import ServicesPageClient, { type Service } from "./ServicesPageClient";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -22,6 +25,20 @@ export async function generateMetadata({
   };
 }
 
-export default function ServicesPage() {
-  return <ServicesPageClient />;
+async function fetchServices(): Promise<Service[] | null> {
+  try {
+    const response = await fetch(API_BASE_URL.replace(/\/$/, "") + "/services", {
+      cache: "no-store",
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return Array.isArray(data) ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+export default async function ServicesPage() {
+  return <ServicesPageClient services={await fetchServices()} />;
 }

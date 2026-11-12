@@ -1,12 +1,11 @@
 "use client";
 
 import { useLanguage } from "@/context/LanguageContext";
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 
-interface Service {
+export interface Service {
   id: number;
   slug?: string;
   title_en: string;
@@ -20,28 +19,9 @@ interface Service {
   sort_order: number;
 }
 
-export default function ServicesPageClient() {
+export default function ServicesPageClient({ services }: { services: Service[] | null }) {
   const { t, locale } = useLanguage();
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
   const isArabic = locale === "ar";
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services`);
-        if (!res.ok) throw new Error("Failed to fetch services");
-        const data = await res.json();
-        setServices(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Error fetching services:", error);
-        setServices([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
 
   return (
     <div className="min-h-screen bg-white pt-24 pb-24">
@@ -56,9 +36,9 @@ export default function ServicesPageClient() {
           </p>
         </div>
 
-        {loading ? (
+        {services === null ? (
           <div className="text-center py-16">
-            <p className="text-xl text-gray-600">{t("common", "loading")}</p>
+            <p role="status" className="text-xl text-gray-600">{t("common", "services_unavailable")}</p>
           </div>
         ) : services.length === 0 ? (
           <div className="text-center py-16">

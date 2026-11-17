@@ -224,6 +224,10 @@ class ProjectResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('main_image')
                     ->label('Image')
+                    ->disk('public')
+                    ->getStateUsing(fn (Project $record): ?string => $record->main_image
+                        ? asset('storage/' . preg_replace('#^storage/#', '', $record->main_image))
+                        : null)
                     ->square(),
                 Tables\Columns\TextColumn::make('name_en')
                     ->label('Name (EN)')

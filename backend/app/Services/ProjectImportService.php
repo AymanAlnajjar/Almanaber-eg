@@ -145,7 +145,8 @@ class ProjectImportService
 
         Storage::disk('public')->put($targetPath, file_get_contents($sourcePath));
 
-        return 'storage/' . $targetPath;
+        // Filament stores disk-relative paths; the API adds the /storage URL prefix.
+        return $targetPath;
     }
 
     private function deleteDir(string $dir): void

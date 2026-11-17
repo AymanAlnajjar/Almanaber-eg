@@ -5,9 +5,11 @@ namespace App\Filament\Resources\ProjectResource\Pages;
 use App\Filament\Resources\ProjectResource;
 use Filament\Actions;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Placeholder;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 
 class EditProject extends EditRecord
 {
@@ -21,7 +23,12 @@ class EditProject extends EditRecord
                 ->icon('heroicon-o-trash')
                 ->color('danger')
                 ->visible(fn (): bool => count($this->record->gallery_images ?? []) > 0)
+                ->modalWidth('5xl')
                 ->form([
+                    Placeholder::make('galleryPreview')
+                        ->label('Gallery images')
+                        ->content(fn (): HtmlString => $this->galleryPreview())
+                        ->columnSpanFull(),
                     Select::make('image')
                         ->label('Image to remove')
                         ->options(fn (): array => collect($this->record->gallery_images ?? [])
@@ -54,5 +61,23 @@ class EditProject extends EditRecord
                 }),
             Actions\DeleteAction::make(),
         ];
+    }
+
+    private function galleryPreview(): HtmlString
+    {
+        $cards = collect($this->record->gallery_images ?? [])
+            ->map(function (string $file, int $index): string {
+                $path = preg_replace('#^storage/#', '', $file);
+                $url = asset('storage/' . $path);
+                $number = $index + 1;
+
+                return '<div style="border:1px solid #555;border-radius:8px;overflow:hidden;">'
+                    . '<a href="' . e($url) . '" target="_blank" rel="noopener noreferrer">'
+                    . '<img src="' . e($url) . '" alt="Gallery image ' . $number . '" loading="lazy" style="width:100%;height:140px;object-fit:cover;">'
+                    . '</a><div style="padding:8px;overflow-wrap:anywhere;font-size:12px;">'
+                    . $number . '. ' . e(basename($file)) . '</div></div>';
+            })->implode('');
+
+        return new HtmlString('<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;max-height:55vh;overflow-y:auto;">' . $cards . '</div>');
     }
 }

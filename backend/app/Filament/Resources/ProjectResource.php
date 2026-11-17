@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectResource extends Resource
 {
@@ -108,6 +109,7 @@ class ProjectResource extends Resource
                                     ->label('Main Image')
                                     ->image()
                                     ->disk('public')
+                                    ->getUploadedFileUsing(fn (string $file): ?array => self::uploadedImageMetadata($file))
                                     ->directory('projects/main')
                                     ->required()
                                     ->imageEditor()
@@ -117,6 +119,7 @@ class ProjectResource extends Resource
                                     ->helperText('Select or drag in up to 30 images (12 MB each) and wait for all uploads to finish before saving.')
                                     ->image()
                                     ->disk('public')
+                                    ->getUploadedFileUsing(fn (string $file): ?array => self::uploadedImageMetadata($file))
                                     ->multiple()
                                     ->maxParallelUploads(1)
                                     ->appendFiles()
@@ -204,6 +207,7 @@ class ProjectResource extends Resource
                                             ->label('Open Graph Image')
                                             ->image()
                                             ->disk('public')
+                                            ->getUploadedFileUsing(fn (string $file): ?array => self::uploadedImageMetadata($file))
                                             ->directory('seo/og-images')
                                             ->imageEditor()
                                             ->helperText('Recommended size: 1200x630px. Used when sharing on social media.'),
@@ -283,6 +287,24 @@ class ProjectResource extends Resource
     {
         return [
             //
+        ];
+    }
+
+    public static function uploadedImageMetadata(string $file): ?array
+    {
+        $path = preg_replace('#^storage/#', '', $file);
+        $disk = Storage::disk('public');
+
+        if (! $disk->exists($path)) {
+            return null;
+        }
+
+        return [
+            'name' => basename($path),
+            'size' => $disk->size($path),
+            'type' => $disk->mimeType($path),
+            // Use the current HTTPS request host, not the disk's configured APP_URL.
+            'url' => asset('storage/' . $path),
         ];
     }
 

@@ -107,6 +107,7 @@ class ProjectResource extends Resource
                                 Forms\Components\FileUpload::make('main_image')
                                     ->label('Main Image')
                                     ->image()
+                                    ->disk('public')
                                     ->directory('projects/main')
                                     ->required()
                                     ->imageEditor()
@@ -115,6 +116,7 @@ class ProjectResource extends Resource
                                     ->label('Gallery Images')
                                     ->helperText('Select or drag in up to 30 images (12 MB each) and wait for all uploads to finish before saving.')
                                     ->image()
+                                    ->disk('public')
                                     ->multiple()
                                     ->maxParallelUploads(1)
                                     ->appendFiles()
@@ -201,6 +203,7 @@ class ProjectResource extends Resource
                                         Forms\Components\FileUpload::make('og_image')
                                             ->label('Open Graph Image')
                                             ->image()
+                                            ->disk('public')
                                             ->directory('seo/og-images')
                                             ->imageEditor()
                                             ->helperText('Recommended size: 1200x630px. Used when sharing on social media.'),

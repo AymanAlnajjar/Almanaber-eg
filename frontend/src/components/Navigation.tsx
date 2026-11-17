@@ -65,6 +65,8 @@ export default function Nav() {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-white focus:outline-none"
               aria-label="Toggle menu"
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-navigation"
             >
               {isMenuOpen ? (
                 <HiX className="w-8 h-8" />
@@ -101,6 +103,7 @@ export default function Nav() {
             <button
               onClick={switchLocale}
               className="text-white hover:text-gray-100 px-3 py-1 text-sm 2xl:text-lg 4k:text-2xl font-medium mx-2 2xl:px-5 4k:px-8"
+              aria-label={locale === "en" ? "Switch to Arabic" : "Switch to English"}
             >
               {locale === "en" ? t("navbar", "language_ar") : t("navbar", "language_en")}
             </button>
@@ -113,7 +116,7 @@ export default function Nav() {
           </div>
           {/* Mobile menu overlay */}
           {isMenuOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex flex-col md:hidden">
+            <div id="mobile-navigation" className="fixed inset-0 bg-black bg-opacity-60 z-50 flex flex-col md:hidden">
               <div className="bg-[#092754] w-3/4 max-w-xs h-full p-6 flex flex-col gap-6" style={{direction: isRTL ? 'rtl' : 'ltr'}}>
                 <button
                   onClick={() => setIsMenuOpen(false)}
@@ -146,6 +149,7 @@ export default function Nav() {
                   <button
                     onClick={() => { switchLocale(); setIsMenuOpen(false); }}
                     className="text-white hover:text-gray-100 px-3 py-2 text-md font-medium rounded bg-[#092754] hover:bg-[#0b3570]"
+                    aria-label={locale === "en" ? "Switch to Arabic" : "Switch to English"}
                   >
                     {locale === "en" ? t("navbar", "language_ar") : t("navbar", "language_en")}
                   </button>
@@ -164,4 +168,4 @@ export default function Nav() {
       </div>
     </nav>
   );
-} 
+}

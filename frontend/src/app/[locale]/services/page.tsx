@@ -1,5 +1,5 @@
-import { Metadata } from "next";
 import { API_BASE_URL } from "@/lib/api";
+import { pageMetadata, type SiteLocale } from "@/lib/seo";
 import ServicesPageClient, { type Service } from "./ServicesPageClient";
 
 export const dynamic = "force-dynamic";
@@ -7,29 +7,26 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+  params: Promise<{ locale: SiteLocale }>;
+}) {
   const { locale } = await params;
   const isAr = locale === "ar";
-  return {
-    title: isAr ? "خدماتنا" : "Our Services",
+
+  return pageMetadata({
+    locale,
+    path: "/services",
+    title: isAr ? "خدماتنا الهندسية" : "Engineering Services",
     description: isAr
-      ? "اكتشف خدمات المنابر الهندسية الشاملة: التصميم المعماري والهندسة الإنشائية والحماية من الحريق والسلامة والبنية التحتية وتصاريح البناء وإدارة المشاريع."
-      : "Explore AlMnaber's comprehensive engineering services: architectural design, structural engineering, fire & life safety, infrastructure, building permits, and project management.",
-    openGraph: {
-      title: isAr ? "الخدمات الهندسية | المنابر" : "Engineering Services | AlMnaber",
-      description: isAr
-        ? "خدمات استشارات هندسية شاملة تشمل التصميم المعماري والحماية من الحريق والبنية التحتية وإدارة المشاريع."
-        : "Comprehensive engineering consultancy services including architectural design, fire safety, infrastructure, and project management.",
-    },
-  };
+      ? "استكشف خدمات المنابر في التصميم المعماري والهندسة الإنشائية وتصميم أنظمة الميكانيكا والكهرباء والحماية من الحريق والسلامة."
+      : "Explore AMCE services in architectural design, structural engineering, MEP design, and fire and life safety engineering.",
+  });
 }
 
 async function fetchServices(): Promise<Service[] | null> {
   try {
     const response = await fetch(API_BASE_URL.replace(/\/$/, "") + "/services", {
       cache: "no-store",
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(8_000),
     });
     if (!response.ok) return null;
     const data = await response.json();

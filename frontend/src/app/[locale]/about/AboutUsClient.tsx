@@ -12,7 +12,7 @@ import Partners from "@/components/Partners";
 
 // --- Interfaces ---
 
-interface AboutPageSettings {
+export interface AboutPageSettings {
   hero_title_en: string;
   hero_title_ar: string;
   hero_subtitle_en: string;
@@ -37,7 +37,7 @@ interface AboutPageSettings {
   portfolio_file: string | null;
 }
 
-interface Value {
+export interface Value {
   id: number;
   title_en: string;
   title_ar: string;
@@ -48,7 +48,7 @@ interface Value {
   sort_order: number;
 }
 
-interface Award {
+export interface Award {
   id: number;
   title_en: string;
   title_ar: string;
@@ -59,7 +59,7 @@ interface Award {
   sort_order: number;
 }
 
-interface TeamMember {
+export interface TeamMember {
   id: number;
   name_en: string;
   name_ar: string;
@@ -74,7 +74,7 @@ interface TeamMember {
   sort_order: number;
 }
 
-interface Partner {
+export interface Partner {
   id: number;
   name_en: string;
   name_ar: string;
@@ -109,18 +109,37 @@ function getIcon(name: string | null, className: string) {
 
 // --- Main Component ---
 
-export default function AboutUsClient() {
+export interface AboutInitialData {
+  settings: AboutPageSettings | null;
+  values: Value[];
+  awards: Award[];
+  leadershipTeam: TeamMember[];
+  partners: Partner[];
+  retryClient: boolean;
+}
+
+export default function AboutUsClient({
+  initialData,
+}: {
+  initialData: AboutInitialData;
+}) {
   const { t, locale } = useLanguage();
   const isRTL = locale === "ar";
 
-  const [settings, setSettings] = useState<AboutPageSettings | null>(null);
-  const [values, setValues] = useState<Value[]>([]);
-  const [awards, setAwards] = useState<Award[]>([]);
-  const [leadershipTeam, setLeadershipTeam] = useState<TeamMember[]>([]);
-  const [partners, setPartners] = useState<Partner[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState<AboutPageSettings | null>(
+    initialData.settings
+  );
+  const [values, setValues] = useState<Value[]>(initialData.values);
+  const [awards, setAwards] = useState<Award[]>(initialData.awards);
+  const [leadershipTeam, setLeadershipTeam] = useState<TeamMember[]>(
+    initialData.leadershipTeam
+  );
+  const [partners, setPartners] = useState<Partner[]>(initialData.partners);
+  const [loading, setLoading] = useState(initialData.retryClient);
 
   useEffect(() => {
+    if (!initialData.retryClient) return;
+
     const API = process.env.NEXT_PUBLIC_API_URL;
     Promise.all([
       fetch(`${API}/about-page`).then(r => r.ok ? r.json() : null).catch(() => null),
@@ -137,7 +156,7 @@ export default function AboutUsClient() {
       setLeadershipTeam(Array.isArray(teamData) ? teamData : []);
       setPartners(Array.isArray(partnersData) ? partnersData : []);
     }).finally(() => setLoading(false));
-  }, []);
+  }, [initialData.retryClient]);
 
   // Helper: get localised field from settings, fall back to translation string
   const s = (enKey: keyof AboutPageSettings, arKey: keyof AboutPageSettings, fallbackNs: string, fallbackKey: string): string => {
@@ -155,7 +174,7 @@ export default function AboutUsClient() {
     link.click();
   };
 
-  const heroImage = settings?.hero_background_image || '/project5.jpg';
+  const heroImage = settings?.hero_background_image || '/placeholder.svg';
 
   return (
     <div className="min-h-screen bg-white">
@@ -169,6 +188,7 @@ export default function AboutUsClient() {
             fill
             className="object-cover"
             priority
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         </div>
@@ -321,6 +341,7 @@ export default function AboutUsClient() {
                           alt={isRTL ? member.name_ar : member.name_en}
                           width={300}
                           height={300}
+                          sizes="(max-width: 768px) 80vw, 300px"
                           className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>

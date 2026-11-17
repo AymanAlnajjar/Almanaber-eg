@@ -1,23 +1,32 @@
-import { Metadata } from "next";
+import { pageMetadata, type SiteLocale } from "@/lib/seo";
 import ClientsPageClient from "./ClientsPageClient";
 
-export const metadata: Metadata = {
-  title: "Our Clients",
-  description:
-    "Trusted by leading organizations across Saudi Arabia. See the clients who trust AlMnaber Consulting for their engineering and architectural projects.",
-  openGraph: {
-    title: "Our Clients | AlMnaber",
-    description:
-      "Leading organizations across Saudi Arabia trust AlMnaber Consulting for engineering excellence.",
-  },
-};
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
-const API = process.env.NEXT_PUBLIC_API_URL;
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: SiteLocale }>;
+}) {
+  const { locale } = await params;
+  const isAr = locale === "ar";
+
+  return pageMetadata({
+    locale,
+    path: "/clients",
+    title: isAr ? "عملاؤنا" : "Our Clients",
+    description: isAr
+      ? "تعرّف على الجهات التي تعاونت مع المنابر في مشاريع وخدمات الاستشارات الهندسية."
+      : "Meet organizations that have worked with AMCE on engineering projects and consultancy services.",
+  });
+}
 
 export default async function ClientsPage() {
-  const clients = await fetch(`${API}/clients`, { next: { revalidate: 300 } })
-    .then((r) => r.json())
+  const clients = await fetch(`${API.replace(/\/$/, "")}/clients`, {
+    next: { revalidate: 300 },
+  })
+    .then((response) => (response.ok ? response.json() : []))
     .catch(() => []);
 
-  return <ClientsPageClient clients={clients} />;
+  return <ClientsPageClient clients={Array.isArray(clients) ? clients : []} />;
 }

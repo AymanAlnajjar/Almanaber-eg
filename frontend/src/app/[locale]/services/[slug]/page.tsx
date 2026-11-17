@@ -1,16 +1,23 @@
 import { notFound } from "next/navigation";
-import { Metadata } from "next";
+import { ServiceJsonLd } from "@/components/JsonLd";
+import {
+  localizedUrl,
+  pageMetadata,
+  type SiteLocale,
+} from "@/lib/seo";
 import ServiceDetailsClient from "./ServiceDetailsClient";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
-async function getService(id: string) {
+async function getService(slug: string) {
   try {
-    const res = await fetch(`${API_URL}/services/${id}`, {
+    const response = await fetch(`${API_URL}/services/${slug}`, {
       cache: "no-store",
+      signal: AbortSignal.timeout(8_000),
     });
-    if (!res.ok) return null;
-    return res.json();
+    if (!response.ok) return null;
+    return response.json();
   } catch (error) {
     console.error("Error fetching service:", error);
     return null;
@@ -20,19 +27,20 @@ async function getService(id: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string; slug: string }>;
-}): Promise<Metadata> {
-  const resolvedParams = await params;
-  const isAr = resolvedParams.locale === "ar";
-  const service = await getService(resolvedParams.slug);
+  params: Promise<{ locale: SiteLocale; slug: string }>;
+}) {
+  const { locale, slug } = await params;
+  const service = await getService(slug);
 
   if (!service) {
-    return { title: isAr ? "الخدمة غير موجودة" : "Service Not Found" };
+    return {
+      title: locale === "ar" ? "الخدمة غير موجودة" : "Service Not Found",
+      robots: { index: false, follow: false },
+    };
   }
 
+  const isAr = locale === "ar";
   const seo = service.seo || {};
-
-  // Use the locale's SEO fields, falling back to the localized service content.
   const title =
     (isAr ? seo.meta_title_ar : seo.meta_title_en) ||
     (isAr ? service.title_ar : service.title_en);
@@ -40,40 +48,42 @@ export async function generateMetadata({
     (isAr ? seo.meta_description_ar : seo.meta_description_en) ||
     (isAr ? service.description_ar : service.description_en) ||
     (isAr
-      ? `${service.title_ar} – خدمة استشارات هندسية من المنابر.`
-      : `${service.title_en} – engineering consultancy service by AlMnaber.`);
-  const keywords = (isAr ? seo.meta_keywords_ar : seo.meta_keywords_en) || "";
-  const ogImage = seo.og_image || service.background_image;
+      ? `خدمة ${title} من المنابر للاستشارات الهندسية.`
+      : `${title} engineering consultancy service from AMCE.`);
 
-  return {
+  return pageMetadata({
+    locale,
+    path: `/services/${slug}`,
     title,
     description,
-    keywords,
-    openGraph: {
-      title: `${title} | AlMnaber Services`,
-      description,
-      images: ogImage ? [{ url: ogImage }] : [],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ogImage ? [ogImage] : [],
-    },
-  };
+    image: seo.og_image || service.background_image,
+    keywords: isAr ? seo.meta_keywords_ar : seo.meta_keywords_en,
+  });
 }
 
 export default async function ServiceDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: SiteLocale; slug: string }>;
 }) {
-  const resolvedParams = await params;
-  const service = await getService(resolvedParams.slug);
+  const { locale, slug } = await params;
+  const service = await getService(slug);
+  if (!service) notFound();
 
-  if (!service) {
-    notFound();
-  }
+  const isAr = locale === "ar";
+  const name = isAr ? service.title_ar : service.title_en;
+  const description =
+    (isAr ? service.description_ar : service.description_en) || name;
 
-  return <ServiceDetailsClient service={service} />;
+  return (
+    <>
+      <ServiceJsonLd
+        name={name}
+        description={description}
+        image={service.background_image}
+        url={localizedUrl(locale, `/services/${slug}`)}
+      />
+      <ServiceDetailsClient service={service} />
+    </>
+  );
 }

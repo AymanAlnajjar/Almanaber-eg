@@ -24,7 +24,7 @@ class AboutPageController extends Controller
             'hero_title_ar' => $settings->hero_title_ar,
             'hero_subtitle_en' => $settings->hero_subtitle_en,
             'hero_subtitle_ar' => $settings->hero_subtitle_ar,
-            'hero_background_image' => $settings->hero_background_image ? asset('storage/' . $settings->hero_background_image) : null,
+            'hero_background_image' => $this->storageUrl($settings->hero_background_image),
             'who_we_are_title_en' => $settings->who_we_are_title_en,
             'who_we_are_title_ar' => $settings->who_we_are_title_ar,
             'who_we_are_content_en' => $settings->who_we_are_content_en,
@@ -41,7 +41,7 @@ class AboutPageController extends Controller
             'portfolio_description_ar' => $settings->portfolio_description_ar,
             'portfolio_button_text_en' => $settings->portfolio_button_text_en,
             'portfolio_button_text_ar' => $settings->portfolio_button_text_ar,
-            'portfolio_file' => $settings->portfolio_file ? asset('storage/' . $settings->portfolio_file) : null,
+            'portfolio_file' => $this->storageUrl($settings->portfolio_file),
         ]);
     }
 }

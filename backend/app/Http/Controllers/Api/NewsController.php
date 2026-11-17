@@ -34,7 +34,7 @@ class NewsController extends Controller
                     'author' => $newsItem->author,
                     'read_time' => $newsItem->read_time,
                     'publish_date' => $newsItem->publish_date->format('Y-m-d'),
-                    'main_image' => $newsItem->main_image ? asset('storage/' . $newsItem->main_image) : null,
+                    'main_image' => $this->storageUrl($newsItem->main_image),
                 ];
             });
 
@@ -63,7 +63,7 @@ class NewsController extends Controller
                     'author' => $newsItem->author,
                     'read_time' => $newsItem->read_time,
                     'publish_date' => $newsItem->publish_date->format('Y-m-d'),
-                    'main_image' => $newsItem->main_image ? asset('storage/' . $newsItem->main_image) : null,
+                    'main_image' => $this->storageUrl($newsItem->main_image),
                 ];
             });
 
@@ -93,9 +93,9 @@ class NewsController extends Controller
             'author' => $newsItem->author,
             'read_time' => $newsItem->read_time,
             'publish_date' => $newsItem->publish_date->format('Y-m-d'),
-            'main_image' => $newsItem->main_image ? asset('storage/' . $newsItem->main_image) : null,
+            'main_image' => $this->storageUrl($newsItem->main_image),
             'gallery_images' => $newsItem->gallery_images
-                ? array_map(fn($img) => asset('storage/' . $img), $newsItem->gallery_images)
+                ? array_map(fn($img) => $this->storageUrl($img), $newsItem->gallery_images)
                 : [],
             // SEO fields
             'seo' => [
@@ -107,7 +107,7 @@ class NewsController extends Controller
                 'meta_keywords_ar' => $newsItem->meta_keywords_ar,
                 'slug_en' => $newsItem->slug_en,
                 'slug_ar' => $newsItem->slug_ar,
-                'og_image' => $newsItem->og_image ? asset('storage/' . $newsItem->og_image) : null,
+                'og_image' => $this->storageUrl($newsItem->og_image),
             ],
         ]);
     }

@@ -23,7 +23,7 @@ class HeroSlideController extends Controller
                     'title_ar' => $slide->title_ar,
                     'area_en' => $slide->area_en,
                     'area_ar' => $slide->area_ar,
-                    'image' => $slide->image ? asset('storage/' . $slide->image) : null,
+                    'image' => $this->storageUrl($slide->image),
                     'sort_order' => $slide->sort_order,
                 ];
             });

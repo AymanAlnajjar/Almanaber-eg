@@ -41,7 +41,7 @@ async function fetchHomeData() {
 export default async function HomePage() {
   const data = await fetchHomeData();
   return (
-    <main>
+    <>
       <JsonLd />
       <Hero slides={data.slides} />
       <Stats stats={data.stats} />
@@ -51,6 +51,6 @@ export default async function HomePage() {
       <News news={data.news} />
       <Blogs blogs={data.blogs} />
       <FindUs />
-    </main>
+    </>
   );
 }

@@ -67,6 +67,7 @@ export default function NewsDetailsClient({ news, locale }: NewsDetailsClientPro
               fill
               className="object-cover"
               priority
+              sizes="(max-width: 1280px) 100vw, 1280px"
             />
           </div>
         </div>
@@ -92,6 +93,7 @@ export default function NewsDetailsClient({ news, locale }: NewsDetailsClientPro
                     alt={`${locale === 'ar' ? news.title_ar : news.title_en} - ${index + 1}`}
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 33vw, 160px"
                   />
                 </button>
               ))}

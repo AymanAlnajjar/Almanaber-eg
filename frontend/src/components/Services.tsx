@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/context/LanguageContext";
+import Image from "next/image";
 import Link from "next/link";
 import { CtaLink } from "@/components/ui/Button";
 
@@ -49,14 +50,20 @@ export default function Services({ services }: ServicesProps) {
                 href={`/${locale}/services/${service.slug || service.id}`}
                 className="service-card"
                 style={{
-                  backgroundImage: service.background_image
-                    ? `url(${service.background_image})`
+                  background: service.background_image
+                    ? undefined
                     : "linear-gradient(135deg, #092754 0%, #1a4078 100%)",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
                 }}
               >
+                {service.background_image && (
+                  <Image
+                    src={service.background_image}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 25vw"
+                  />
+                )}
                 <div className="service-title-visible">
                   <h3 className="service-title-text">
                     {locale === "ar" ? service.title_ar : service.title_en}

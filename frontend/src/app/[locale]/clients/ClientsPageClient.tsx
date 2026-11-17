@@ -65,7 +65,7 @@ export default function ClientsPageClient({ clients }: ClientsPageClientProps) {
             const card = (
               <div className="relative w-full h-32 md:h-40 lg:h-48 bg-white rounded-lg shadow-lg p-6 flex items-center justify-center transition-all duration-300 group-hover:shadow-xl group-hover:scale-105">
                 <Image
-                  src={client.logo || "/placeholder.png"}
+                  src={client.logo || "/placeholder.svg"}
                   alt={locale === "ar" ? client.name_ar : client.name_en}
                   width={200}
                   height={120}

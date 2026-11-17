@@ -1,108 +1,134 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
+import { localizedUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://almnabr.eg";
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"
+).replace(/\/+$/, "");
 
 const LOCALES = ["ar", "en"] as const;
 
-// Emit one entry per locale for a given path suffix (e.g. "" for home,
-// "/about"), each carrying hreflang alternates to its sibling locale. Now that
-// real /ar and /en routing exists, these alternates resolve instead of 404ing.
+type SitemapRecord = {
+  id: number;
+  updated_at?: string | null;
+  publish_date?: string | null;
+};
+
+type ServiceSitemapRecord = SitemapRecord & {
+  slug_en?: string | null;
+};
+
+type SitemapData = {
+  projects?: SitemapRecord[];
+  news?: SitemapRecord[];
+  blogs?: SitemapRecord[];
+  services?: ServiceSitemapRecord[];
+};
+
+function validDate(value?: string | null): Date | undefined {
+  if (!value) return undefined;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date;
+}
+
 function localized(
   path: string,
-  opts: {
+  options: {
     changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
     priority: number;
     lastModified?: Date;
   }
 ): MetadataRoute.Sitemap {
-  return LOCALES.map((l) => ({
-    url: `${SITE_URL}/${l}${path}`,
-    lastModified: opts.lastModified ?? new Date(),
-    changeFrequency: opts.changeFrequency,
-    priority: opts.priority,
+  return LOCALES.map((locale) => ({
+    url: localizedUrl(locale, path),
+    ...(options.lastModified ? { lastModified: options.lastModified } : {}),
+    changeFrequency: options.changeFrequency,
+    priority: options.priority,
     alternates: {
       languages: {
-        ar: `${SITE_URL}/ar${path}`,
-        en: `${SITE_URL}/en${path}`,
-        "x-default": `${SITE_URL}/ar${path}`,
+        ar: localizedUrl("ar", path),
+        en: localizedUrl("en", path),
+        "x-default": localizedUrl("ar", path),
       },
     },
   }));
+}
+
+async function fetchSitemapData(): Promise<SitemapData> {
+  try {
+    const response = await fetch(`${API_URL}/sitemap-data`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(8_000),
+    });
+
+    if (!response.ok) return {};
+    const data: unknown = await response.json();
+    return data && typeof data === "object" ? (data as SitemapData) : {};
+  } catch (error) {
+    console.error("Unable to load dynamic sitemap data", error);
+    return {};
+  }
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     ...localized("", { changeFrequency: "weekly", priority: 1 }),
     ...localized("/about", { changeFrequency: "monthly", priority: 0.8 }),
-    ...localized("/services", { changeFrequency: "monthly", priority: 0.8 }),
+    ...localized("/services", { changeFrequency: "monthly", priority: 0.9 }),
     ...localized("/projects", { changeFrequency: "weekly", priority: 0.9 }),
     ...localized("/clients", { changeFrequency: "monthly", priority: 0.6 }),
-    ...localized("/news", { changeFrequency: "daily", priority: 0.8 }),
-    ...localized("/blogs", { changeFrequency: "weekly", priority: 0.6 }),
-    ...localized("/careers", { changeFrequency: "weekly", priority: 0.7 }),
-    ...localized("/contact", { changeFrequency: "yearly", priority: 0.5 }),
+    ...localized("/news", { changeFrequency: "weekly", priority: 0.7 }),
+    ...localized("/blogs", { changeFrequency: "weekly", priority: 0.7 }),
+    ...localized("/careers", { changeFrequency: "weekly", priority: 0.5 }),
+    ...localized("/contact", { changeFrequency: "yearly", priority: 0.6 }),
+    ...localized("/privacy-policy", { changeFrequency: "yearly", priority: 0.2 }),
+    ...localized("/terms-of-service", { changeFrequency: "yearly", priority: 0.2 }),
   ];
 
-  // Dynamic project pages
-  let projectPages: MetadataRoute.Sitemap = [];
-  try {
-    const res = await fetch(`${API_URL}/projects`, { cache: "no-store" });
-    if (res.ok) {
-      const projects = await res.json();
-      projectPages = (Array.isArray(projects) ? projects : []).flatMap(
-        (project: { id: number }) =>
-          localized(`/projects/${project.id}`, {
-            changeFrequency: "monthly",
-            priority: 0.7,
-          })
-      );
-    }
-  } catch (error) {
-    console.error("Error fetching projects for sitemap:", error);
-  }
+  const data = await fetchSitemapData();
 
-  // Dynamic service pages (slug-based SEO URLs)
-  let servicePages: MetadataRoute.Sitemap = [];
-  try {
-    const res = await fetch(`${API_URL}/services`, { cache: "no-store" });
-    if (res.ok) {
-      const services = await res.json();
-      servicePages = (Array.isArray(services) ? services : [])
-        .filter((s: { slug?: string }) => s.slug)
-        .flatMap((service: { slug: string }) =>
-          localized(`/services/${service.slug}`, {
-            changeFrequency: "monthly",
-            priority: 0.8,
-          })
-        );
-    }
-  } catch (error) {
-    console.error("Error fetching services for sitemap:", error);
-  }
+  const projectPages = (data.projects ?? []).flatMap((project) =>
+    localized(`/projects/${project.id}`, {
+      changeFrequency: "monthly",
+      priority: 0.7,
+      lastModified: validDate(project.updated_at),
+    })
+  );
 
-  // Dynamic news pages
-  let newsPages: MetadataRoute.Sitemap = [];
-  try {
-    const res = await fetch(`${API_URL}/news`, { cache: "no-store" });
-    if (res.ok) {
-      const news = await res.json();
-      newsPages = (Array.isArray(news) ? news : []).flatMap(
-        (item: { id: number; publish_date?: string }) =>
-          localized(`/news/${item.id}`, {
-            changeFrequency: "monthly",
-            priority: 0.6,
-            lastModified: item.publish_date
-              ? new Date(item.publish_date)
-              : new Date(),
-          })
-      );
-    }
-  } catch (error) {
-    console.error("Error fetching news for sitemap:", error);
-  }
+  const servicePages = (data.services ?? [])
+    .filter((service): service is ServiceSitemapRecord & { slug_en: string } =>
+      Boolean(service.slug_en)
+    )
+    .flatMap((service) =>
+      localized(`/services/${service.slug_en}`, {
+        changeFrequency: "monthly",
+        priority: 0.8,
+        lastModified: validDate(service.updated_at),
+      })
+    );
 
-  return [...staticPages, ...servicePages, ...projectPages, ...newsPages];
+  const newsPages = (data.news ?? []).flatMap((item) =>
+    localized(`/news/${item.id}`, {
+      changeFrequency: "monthly",
+      priority: 0.6,
+      lastModified: validDate(item.updated_at || item.publish_date),
+    })
+  );
+
+  const blogPages = (data.blogs ?? []).flatMap((item) =>
+    localized(`/blogs/${item.id}`, {
+      changeFrequency: "monthly",
+      priority: 0.6,
+      lastModified: validDate(item.updated_at || item.publish_date),
+    })
+  );
+
+  return [
+    ...staticPages,
+    ...servicePages,
+    ...projectPages,
+    ...newsPages,
+    ...blogPages,
+  ];
 }

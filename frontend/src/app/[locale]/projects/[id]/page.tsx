@@ -1,16 +1,23 @@
 import { notFound } from "next/navigation";
-import { Metadata } from "next";
+import { ProjectJsonLd } from "@/components/JsonLd";
+import {
+  localizedUrl,
+  pageMetadata,
+  type SiteLocale,
+} from "@/lib/seo";
 import ProjectDetailsClient from "./ProjectDetailsClient";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 async function getProject(id: string) {
   try {
-    const res = await fetch(`${API_URL}/projects/${id}`, {
+    const response = await fetch(`${API_URL}/projects/${id}`, {
       cache: "no-store",
+      signal: AbortSignal.timeout(8_000),
     });
-    if (!res.ok) return null;
-    return res.json();
+    if (!response.ok) return null;
+    return response.json();
   } catch (error) {
     console.error("Error fetching project:", error);
     return null;
@@ -20,52 +27,67 @@ async function getProject(id: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string; locale: string }>;
-}): Promise<Metadata> {
-  const resolvedParams = await params;
-  const project = await getProject(resolvedParams.id);
+  params: Promise<{ id: string; locale: SiteLocale }>;
+}) {
+  const { id, locale } = await params;
+  const project = await getProject(id);
 
   if (!project) {
-    return { title: "Project Not Found" };
+    return {
+      title: locale === "ar" ? "المشروع غير موجود" : "Project Not Found",
+      robots: { index: false, follow: false },
+    };
   }
 
-  const locale = resolvedParams.locale;
+  const isAr = locale === "ar";
   const seo = project.seo || {};
-
-  // Use SEO fields from admin panel, fall back to content fields
   const title =
-    (locale === "ar" ? seo.meta_title_ar : seo.meta_title_en) ||
-    (locale === "ar" ? project.name_ar : project.name_en);
+    (isAr ? seo.meta_title_ar : seo.meta_title_en) ||
+    (isAr ? project.name_ar : project.name_en);
   const description =
-    (locale === "ar" ? seo.meta_description_ar : seo.meta_description_en) ||
-    (locale === "ar" ? project.mission_ar || project.area_ar : project.mission_en || project.area_en);
-  const keywords =
-    (locale === "ar" ? seo.meta_keywords_ar : seo.meta_keywords_en) || "";
-  const ogImage = seo.og_image || project.main_image;
+    (isAr ? seo.meta_description_ar : seo.meta_description_en) ||
+    (isAr
+      ? project.mission_ar || project.area_ar
+      : project.mission_en || project.area_en) ||
+    (isAr
+      ? `مشروع هندسي من تنفيذ المنابر: ${title}`
+      : `Engineering project by AMCE: ${title}`);
 
-  return {
-    title: title,
-    description: description || `${title} - AlMnaber Engineering Project`,
-    keywords: keywords,
-    openGraph: {
-      title: `${title} | AlMnaber Projects`,
-      description: description || `${title} - Engineering project by AlMnaber Consulting`,
-      images: ogImage ? [{ url: ogImage }] : [],
-    },
-  };
+  return pageMetadata({
+    locale,
+    path: `/projects/${id}`,
+    title,
+    description,
+    image: seo.og_image || project.main_image,
+    keywords: isAr ? seo.meta_keywords_ar : seo.meta_keywords_en,
+  });
 }
 
 export default async function ProjectDetailsPage({
   params,
 }: {
-  params: Promise<{ id: string; locale: string }>;
+  params: Promise<{ id: string; locale: SiteLocale }>;
 }) {
-  const resolvedParams = await params;
-  const project = await getProject(resolvedParams.id);
+  const { id, locale } = await params;
+  const project = await getProject(id);
+  if (!project) notFound();
 
-  if (!project) {
-    notFound();
-  }
+  const isAr = locale === "ar";
+  const name = isAr ? project.name_ar : project.name_en;
+  const description =
+    (isAr ? project.mission_ar || project.area_ar : project.mission_en || project.area_en) ||
+    name;
 
-  return <ProjectDetailsClient project={project} locale={resolvedParams.locale} />;
+  return (
+    <>
+      <ProjectJsonLd
+        name={name}
+        description={description}
+        image={project.main_image}
+        url={localizedUrl(locale, `/projects/${id}`)}
+        location={isAr ? project.location_ar : project.location_en}
+      />
+      <ProjectDetailsClient project={project} locale={locale} />
+    </>
+  );
 }

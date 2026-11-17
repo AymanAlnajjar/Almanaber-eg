@@ -1,16 +1,23 @@
 import { notFound } from "next/navigation";
-import { Metadata } from "next";
+import { ArticleJsonLd } from "@/components/JsonLd";
+import {
+  localizedUrl,
+  pageMetadata,
+  type SiteLocale,
+} from "@/lib/seo";
 import NewsDetailsClient from "./NewsDetailsClient";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 async function getNews(id: string) {
   try {
-    const res = await fetch(`${API_URL}/news/${id}`, {
+    const response = await fetch(`${API_URL}/news/${id}`, {
       cache: "no-store",
+      signal: AbortSignal.timeout(8_000),
     });
-    if (!res.ok) return null;
-    return res.json();
+    if (!response.ok) return null;
+    return response.json();
   } catch (error) {
     console.error("Error fetching news:", error);
     return null;
@@ -20,61 +27,68 @@ async function getNews(id: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string; locale: string }>;
-}): Promise<Metadata> {
-  const resolvedParams = await params;
-  const news = await getNews(resolvedParams.id);
+  params: Promise<{ id: string; locale: SiteLocale }>;
+}) {
+  const { id, locale } = await params;
+  const article = await getNews(id);
 
-  if (!news) {
-    return { title: "Article Not Found" };
+  if (!article) {
+    return {
+      title: locale === "ar" ? "الخبر غير موجود" : "News Item Not Found",
+      robots: { index: false, follow: false },
+    };
   }
 
-  const locale = resolvedParams.locale;
-  const seo = news.seo || {};
-
-  // Use SEO fields from admin panel, fall back to content fields
+  const isAr = locale === "ar";
+  const seo = article.seo || {};
   const title =
-    (locale === "ar" ? seo.meta_title_ar : seo.meta_title_en) ||
-    (locale === "ar" ? news.title_ar : news.title_en);
+    (isAr ? seo.meta_title_ar : seo.meta_title_en) ||
+    (isAr ? article.title_ar : article.title_en);
   const description =
-    (locale === "ar" ? seo.meta_description_ar : seo.meta_description_en) ||
-    (locale === "ar" ? news.description_ar : news.description_en);
-  const keywords =
-    (locale === "ar" ? seo.meta_keywords_ar : seo.meta_keywords_en) || "";
-  const ogImage = seo.og_image || news.main_image;
+    (isAr ? seo.meta_description_ar : seo.meta_description_en) ||
+    (isAr ? article.description_ar : article.description_en);
 
-  return {
-    title: title,
-    description: description,
-    keywords: keywords,
-    openGraph: {
-      type: "article",
-      title: title,
-      description: description,
-      images: ogImage ? [{ url: ogImage }] : [],
-      publishedTime: news.publish_date,
-      authors: [news.author],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: title,
-      description: description,
-      images: ogImage ? [ogImage] : [],
-    },
-  };
+  return pageMetadata({
+    locale,
+    path: `/news/${id}`,
+    title,
+    description,
+    image: seo.og_image || article.main_image,
+    type: "article",
+    publishedTime: article.publish_date,
+    authors: article.author ? [article.author] : undefined,
+    keywords: isAr ? seo.meta_keywords_ar : seo.meta_keywords_en,
+  });
 }
 
 export default async function NewsDetailsPage({
   params,
 }: {
-  params: Promise<{ id: string; locale: string }>;
+  params: Promise<{ id: string; locale: SiteLocale }>;
 }) {
-  const resolvedParams = await params;
-  const news = await getNews(resolvedParams.id);
+  const { id, locale } = await params;
+  const article = await getNews(id);
+  if (!article) notFound();
 
-  if (!news) {
-    notFound();
-  }
+  const isAr = locale === "ar";
+  const title = isAr ? article.title_ar : article.title_en;
+  const description = isAr
+    ? article.description_ar
+    : article.description_en;
+  const url = localizedUrl(locale, `/news/${id}`);
 
-  return <NewsDetailsClient news={news} locale={resolvedParams.locale} />;
+  return (
+    <>
+      <ArticleJsonLd
+        articleType="NewsArticle"
+        title={title}
+        description={description}
+        image={article.main_image}
+        publishDate={article.publish_date}
+        author={article.author || "AMCE"}
+        url={url}
+      />
+      <NewsDetailsClient news={article} locale={locale} />
+    </>
+  );
 }

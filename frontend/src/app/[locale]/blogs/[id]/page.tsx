@@ -1,16 +1,23 @@
 import { notFound } from "next/navigation";
-import { Metadata } from "next";
+import { ArticleJsonLd } from "@/components/JsonLd";
+import {
+  localizedUrl,
+  pageMetadata,
+  type SiteLocale,
+} from "@/lib/seo";
 import BlogDetailsClient from "./BlogDetailsClient";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 async function getBlog(id: string) {
   try {
-    const res = await fetch(`${API_URL}/blogs/${id}`, {
+    const response = await fetch(`${API_URL}/blogs/${id}`, {
       cache: "no-store",
+      signal: AbortSignal.timeout(8_000),
     });
-    if (!res.ok) return null;
-    return res.json();
+    if (!response.ok) return null;
+    return response.json();
   } catch (error) {
     console.error("Error fetching blog:", error);
     return null;
@@ -20,60 +27,65 @@ async function getBlog(id: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string; locale: string }>;
-}): Promise<Metadata> {
-  const resolvedParams = await params;
-  const blog = await getBlog(resolvedParams.id);
+  params: Promise<{ id: string; locale: SiteLocale }>;
+}) {
+  const { id, locale } = await params;
+  const blog = await getBlog(id);
 
   if (!blog) {
-    return { title: "Blog Post Not Found" };
+    return {
+      title: locale === "ar" ? "المقال غير موجود" : "Article Not Found",
+      robots: { index: false, follow: false },
+    };
   }
 
-  const locale = resolvedParams.locale;
+  const isAr = locale === "ar";
   const seo = blog.seo || {};
-
   const title =
-    (locale === "ar" ? seo.meta_title_ar : seo.meta_title_en) ||
-    (locale === "ar" ? blog.title_ar : blog.title_en);
+    (isAr ? seo.meta_title_ar : seo.meta_title_en) ||
+    (isAr ? blog.title_ar : blog.title_en);
   const description =
-    (locale === "ar" ? seo.meta_description_ar : seo.meta_description_en) ||
-    (locale === "ar" ? blog.description_ar : blog.description_en);
-  const keywords =
-    (locale === "ar" ? seo.meta_keywords_ar : seo.meta_keywords_en) || "";
-  const ogImage = seo.og_image || blog.main_image;
+    (isAr ? seo.meta_description_ar : seo.meta_description_en) ||
+    (isAr ? blog.description_ar : blog.description_en);
 
-  return {
+  return pageMetadata({
+    locale,
+    path: `/blogs/${id}`,
     title,
     description,
-    keywords,
-    openGraph: {
-      type: "article",
-      title,
-      description,
-      images: ogImage ? [{ url: ogImage }] : [],
-      publishedTime: blog.publish_date,
-      authors: [blog.author],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ogImage ? [ogImage] : [],
-    },
-  };
+    image: seo.og_image || blog.main_image,
+    type: "article",
+    publishedTime: blog.publish_date,
+    authors: blog.author ? [blog.author] : undefined,
+    keywords: isAr ? seo.meta_keywords_ar : seo.meta_keywords_en,
+  });
 }
 
 export default async function BlogDetailsPage({
   params,
 }: {
-  params: Promise<{ id: string; locale: string }>;
+  params: Promise<{ id: string; locale: SiteLocale }>;
 }) {
-  const resolvedParams = await params;
-  const blog = await getBlog(resolvedParams.id);
+  const { id, locale } = await params;
+  const blog = await getBlog(id);
+  if (!blog) notFound();
 
-  if (!blog) {
-    notFound();
-  }
+  const isAr = locale === "ar";
+  const title = isAr ? blog.title_ar : blog.title_en;
+  const description = isAr ? blog.description_ar : blog.description_en;
+  const url = localizedUrl(locale, `/blogs/${id}`);
 
-  return <BlogDetailsClient blog={blog} locale={resolvedParams.locale} />;
+  return (
+    <>
+      <ArticleJsonLd
+        title={title}
+        description={description}
+        image={blog.main_image}
+        publishDate={blog.publish_date}
+        author={blog.author || "AMCE"}
+        url={url}
+      />
+      <BlogDetailsClient blog={blog} locale={locale} />
+    </>
+  );
 }

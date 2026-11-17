@@ -64,6 +64,7 @@ export default function ServiceDetailsClient({ service }: Props) {
             fill
             className="object-cover"
             priority
+            sizes="100vw"
           />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-[#092754] to-[#1a4078]" />

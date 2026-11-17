@@ -81,7 +81,7 @@ export default function Clients({ clients }: ClientsProps) {
                         logo-strip pattern. Avoids the width-collapse you get from a
                         stretchy w-full box, and makes every logo a consistent size. */}
                     <Image
-                      src={client.logo || "/placeholder.png"}
+                      src={client.logo || "/placeholder.svg"}
                       alt={locale === "ar" ? client.name_ar : client.name_en}
                       width={260}
                       height={140}

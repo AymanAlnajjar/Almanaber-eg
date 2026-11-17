@@ -1,20 +1,24 @@
-import { Metadata } from "next";
 import { Suspense } from "react";
+import { pageMetadata, type SiteLocale } from "@/lib/seo";
 import ApplyPageClient from "./ApplyPageClient";
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+  params: Promise<{ locale: SiteLocale }>;
+}) {
   const { locale } = await params;
   const isAr = locale === "ar";
-  return {
+
+  return pageMetadata({
+    locale,
+    path: "/careers/apply",
     title: isAr ? "التقديم على وظيفة" : "Apply for a Position",
     description: isAr
-      ? "قدّم طلبك للانضمام إلى فريق شركة المنابر للاستشارات الهندسية."
-      : "Submit your application to join AlMnaber Consulting Professional Co. team.",
-  };
+      ? "قدّم طلبك للانضمام إلى فريق المنابر للاستشارات الهندسية."
+      : "Submit an application to join the AMCE team.",
+    robots: { index: false, follow: true },
+  });
 }
 
 export default function ApplyPage() {

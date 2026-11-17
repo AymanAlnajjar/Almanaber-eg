@@ -1,25 +1,22 @@
-import { Metadata } from "next";
+import { pageMetadata, type SiteLocale } from "@/lib/seo";
 import CareersPageClient from "./CareersPageClient";
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+  params: Promise<{ locale: SiteLocale }>;
+}) {
   const { locale } = await params;
   const isAr = locale === "ar";
-  return {
+
+  return pageMetadata({
+    locale,
+    path: "/careers",
     title: isAr ? "الوظائف" : "Careers",
     description: isAr
-      ? "انضم إلى شركة المنابر للاستشارات الهندسية. اكتشف فرص العمل في الهندسة والعمارة وإدارة المشاريع وغيرها."
-      : "Join AlMnaber Consulting Professional Co. Explore career opportunities in engineering, architecture, project management, and more.",
-    openGraph: {
-      title: isAr ? "الوظائف في المنابر" : "Careers at AlMnaber",
-      description: isAr
-        ? "اكتشف فرص العمل في بيت خبرة هندسي رائد وانضم إلى فريقنا من المحترفين."
-        : "Explore career opportunities at a leading engineering consultancy. Join our team of professionals.",
-    },
-  };
+      ? "استكشف فرص العمل المتاحة لدى المنابر للاستشارات الهندسية."
+      : "Explore career opportunities at Almnabr Consulting Engineering.",
+  });
 }
 
 export default function CareersPage() {

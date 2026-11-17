@@ -60,6 +60,7 @@ export default function Projects({ projects }: ProjectsProps) {
                   alt={locale === "ar" ? project.name_ar : project.name_en}
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
                 <div className="absolute inset-0 flex items-end opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="w-full p-4 2xl:p-6 4k:p-8 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-b-lg">

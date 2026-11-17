@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint .",
+    "seo:check": "node scripts/seo-regression.mjs"
   },
   "dependencies": {
     "next": "^15.5.28",

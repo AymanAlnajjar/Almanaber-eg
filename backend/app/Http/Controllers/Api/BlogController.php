@@ -34,7 +34,7 @@ class BlogController extends Controller
                     'author' => $blog->author,
                     'read_time' => $blog->read_time,
                     'publish_date' => $blog->publish_date->format('Y-m-d'),
-                    'main_image' => $blog->main_image ? asset('storage/' . $blog->main_image) : null,
+                    'main_image' => $this->storageUrl($blog->main_image),
                 ];
             });
 
@@ -63,7 +63,7 @@ class BlogController extends Controller
                     'author' => $blog->author,
                     'read_time' => $blog->read_time,
                     'publish_date' => $blog->publish_date->format('Y-m-d'),
-                    'main_image' => $blog->main_image ? asset('storage/' . $blog->main_image) : null,
+                    'main_image' => $this->storageUrl($blog->main_image),
                 ];
             });
 
@@ -93,9 +93,9 @@ class BlogController extends Controller
             'author' => $blog->author,
             'read_time' => $blog->read_time,
             'publish_date' => $blog->publish_date->format('Y-m-d'),
-            'main_image' => $blog->main_image ? asset('storage/' . $blog->main_image) : null,
+            'main_image' => $this->storageUrl($blog->main_image),
             'gallery_images' => $blog->gallery_images
-                ? array_map(fn($img) => asset('storage/' . $img), $blog->gallery_images)
+                ? array_map(fn($img) => $this->storageUrl($img), $blog->gallery_images)
                 : [],
             // SEO fields
             'seo' => [
@@ -107,7 +107,7 @@ class BlogController extends Controller
                 'meta_keywords_ar' => $blog->meta_keywords_ar,
                 'slug_en' => $blog->slug_en,
                 'slug_ar' => $blog->slug_ar,
-                'og_image' => $blog->og_image ? asset('storage/' . $blog->og_image) : null,
+                'og_image' => $this->storageUrl($blog->og_image),
             ],
         ]);
     }

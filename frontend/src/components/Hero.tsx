@@ -28,6 +28,11 @@ export default function Hero({ slides }: HeroProps) {
   if (slides.length === 0) {
     return (
       <div className="w-full h-[90vh] md:h-[100vh] relative overflow-hidden bg-gray-200 flex items-center justify-center">
+        <h1 className="sr-only">
+          {locale === "ar"
+            ? "المنابر للاستشارات الهندسية"
+            : "Almnabr Consulting Engineering"}
+        </h1>
         <p className="text-gray-600 text-xl">No slides available</p>
       </div>
     );
@@ -40,7 +45,7 @@ export default function Hero({ slides }: HeroProps) {
       <h1 className="sr-only">
         {locale === "ar"
           ? "شركة المنابر للاستشارات الهندسية"
-          : "Al Manaber Consulting Engineering"}
+          : "Almnabr Consulting Engineering"}
       </h1>
       <Swiper
         key={locale}
@@ -63,6 +68,7 @@ export default function Hero({ slides }: HeroProps) {
                 fill
                 className="object-cover"
                 priority={idx === 0}
+                sizes="100vw"
                 style={{ objectPosition: "center" }}
               />
               <div

@@ -74,7 +74,7 @@ export default function Partners({ partners }: PartnersProps) {
               <div key={partner.id} className="px-3">
                 <div className="flex items-center justify-center h-28 md:h-32 lg:h-36">
                   <Image
-                    src={partner.logo || "/placeholder.png"}
+                    src={partner.logo || "/placeholder.svg"}
                     alt={locale === "ar" ? partner.name_ar : partner.name_en}
                     width={260}
                     height={140}

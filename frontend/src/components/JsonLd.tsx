@@ -1,143 +1,122 @@
-"use client";
+import {
+  ORGANIZATION_ID,
+  SITE_NAME_AR,
+  SITE_NAME_EN,
+  SITE_URL,
+} from "@/lib/seo";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://almnaber.com";
+function JsonLdScript({ data }: { data: object }) {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
 
 export default function JsonLd() {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "AlMnaber Consulting Professional Co.",
-    alternateName: "AlMnaber",
+    "@id": ORGANIZATION_ID,
+    name: SITE_NAME_EN,
+    alternateName: [SITE_NAME_AR, "AMCE"],
     url: SITE_URL,
-    logo: `${SITE_URL}/almnabr-logo.png`,
-    description:
-      "Leading Saudi engineering consultancy specializing in architectural design, structural engineering, fire & life safety, infrastructure, and project management.",
-    address: [
-      {
-        "@type": "PostalAddress",
-        addressLocality: "Cairo",
-        addressCountry: "EG",
-      },
-    ],
-    sameAs: [],
-    serviceArea: {
-      "@type": "GeoCircle",
-      geoMidpoint: {
-        "@type": "GeoCoordinates",
-        latitude: 30.049593,
-        longitude: 31.38347,
-      },
+    logo: {
+      "@type": "ImageObject",
+      url: `${SITE_URL}/almnabr-logo.png`,
     },
-  };
-
-  const localBusinessSchema = {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    name: "AlMnaber Consulting Professional Co.",
-    url: SITE_URL,
-    logo: `${SITE_URL}/almnabr-logo.png`,
-    image: `${SITE_URL}/almnabr-logo.png`,
     description:
-      "Engineering consultancy firm providing architectural design, structural engineering, fire & life safety, infrastructure, and project management services.",
+      "Engineering consultancy providing architectural, structural, MEP, and fire and life safety design services.",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Cairo",
       addressCountry: "EG",
     },
-    priceRange: "$$",
-    areaServed: ["Saudi Arabia", "Middle East"],
-    knowsAbout: [
-      "Architectural Design",
-      "Structural Engineering",
-      "Fire & Life Safety",
-      "Infrastructure Design",
-      "Project Management",
-      "Building Permits",
-      "Construction Supervision",
-    ],
   };
 
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "AlMnaber Consulting Professional Co.",
+    "@id": `${SITE_URL}/#website`,
+    name: SITE_NAME_EN,
+    alternateName: SITE_NAME_AR,
     url: SITE_URL,
-    inLanguage: ["en", "ar"],
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${SITE_URL}/en/projects?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
+    inLanguage: ["ar", "en"],
+    publisher: { "@id": ORGANIZATION_ID },
   };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-      />
+      <JsonLdScript data={organizationSchema} />
+      <JsonLdScript data={websiteSchema} />
     </>
   );
 }
 
-// Reusable JSON-LD for individual news articles
-export function NewsArticleJsonLd({
+export function ArticleJsonLd({
+  articleType = "BlogPosting",
   title,
   description,
   image,
   publishDate,
+  modifiedDate,
   author,
   url,
 }: {
+  articleType?: "BlogPosting" | "NewsArticle";
   title: string;
   description: string;
-  image: string;
+  image?: string | null;
   publishDate: string;
+  modifiedDate?: string;
   author: string;
   url: string;
 }) {
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "NewsArticle",
-    headline: title,
-    description: description,
-    image: image,
-    datePublished: publishDate,
-    author: {
-      "@type": "Person",
-      name: author,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "AlMnaber Consulting Professional Co.",
-      logo: {
-        "@type": "ImageObject",
-        url: `${SITE_URL}/almnabr-logo.png`,
-      },
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": url,
-    },
-  };
-
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+    <JsonLdScript
+      data={{
+        "@context": "https://schema.org",
+        "@type": articleType,
+        headline: title,
+        description,
+        ...(image ? { image } : {}),
+        datePublished: publishDate,
+        ...(modifiedDate ? { dateModified: modifiedDate } : {}),
+        author: { "@type": "Person", name: author },
+        publisher: { "@id": ORGANIZATION_ID },
+        mainEntityOfPage: { "@type": "WebPage", "@id": url },
+      }}
     />
   );
 }
 
-// Reusable JSON-LD for project pages
+export function ServiceJsonLd({
+  name,
+  description,
+  image,
+  url,
+}: {
+  name: string;
+  description: string;
+  image?: string | null;
+  url: string;
+}) {
+  return (
+    <JsonLdScript
+      data={{
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name,
+        description,
+        ...(image ? { image } : {}),
+        url,
+        provider: { "@id": ORGANIZATION_ID },
+      }}
+    />
+  );
+}
+
 export function ProjectJsonLd({
   name,
   description,
@@ -147,58 +126,45 @@ export function ProjectJsonLd({
 }: {
   name: string;
   description: string;
-  image: string;
+  image?: string | null;
   url: string;
   location?: string;
 }) {
-  const projectSchema = {
-    "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    name: name,
-    description: description,
-    image: image,
-    url: url,
-    creator: {
-      "@type": "Organization",
-      name: "AlMnaber Consulting Professional Co.",
-    },
-    ...(location && {
-      locationCreated: {
-        "@type": "Place",
-        name: location,
-      },
-    }),
-  };
-
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(projectSchema) }}
+    <JsonLdScript
+      data={{
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        name,
+        description,
+        ...(image ? { image } : {}),
+        url,
+        creator: { "@id": ORGANIZATION_ID },
+        ...(location
+          ? { locationCreated: { "@type": "Place", name: location } }
+          : {}),
+      }}
     />
   );
 }
 
-// Breadcrumb JSON-LD
 export function BreadcrumbJsonLd({
   items,
 }: {
   items: { name: string; url: string }[];
 }) {
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: item.name,
-      item: item.url,
-    })),
-  };
-
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+    <JsonLdScript
+      data={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: items.map((item, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: item.name,
+          item: item.url,
+        })),
+      }}
     />
   );
 }

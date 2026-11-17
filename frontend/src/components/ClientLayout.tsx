@@ -4,7 +4,6 @@ import { ReactNode, useEffect } from "react";
 import Nav from "@/components/Navigation";
 import PageTracker from "@/components/PageTracker";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
-import BreadcrumbJsonLd from "@/components/BreadcrumbJsonLd";
 
 function LangHtmlWrapper({ children }: { children: ReactNode }) {
   const { locale } = useLanguage();
@@ -19,9 +18,8 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
   return (
     <LangHtmlWrapper>
       <PageTracker />
-      <BreadcrumbJsonLd />
       <Nav />
-      {children}
+      <main>{children}</main>
       <WhatsAppFloat />
     </LangHtmlWrapper>
   );

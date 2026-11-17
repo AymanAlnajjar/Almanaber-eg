@@ -1,10 +1,23 @@
-import { Metadata } from "next";
+import { pageMetadata, type SiteLocale } from "@/lib/seo";
 import TermsOfServiceClient from "./TermsOfServiceClient";
 
-export const metadata: Metadata = {
-  title: "Terms of Service",
-  description: "AlMnaber Consulting Professional Co. terms of service. Read our terms and conditions for using our website and services.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: SiteLocale }>;
+}) {
+  const { locale } = await params;
+  const isAr = locale === "ar";
+
+  return pageMetadata({
+    locale,
+    path: "/terms-of-service",
+    title: isAr ? "شروط الاستخدام" : "Terms of Service",
+    description: isAr
+      ? "شروط استخدام موقع المنابر للاستشارات الهندسية."
+      : "Terms for using the Almnabr Consulting Engineering website.",
+  });
+}
 
 export default function TermsOfServicePage() {
   return <TermsOfServiceClient />;

@@ -1,20 +1,27 @@
-import { Metadata } from "next";
+import { pageMetadata, type SiteLocale } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Blog",
-  description:
-    "Insights, tips, industry trends, and case studies from AlMnaber Consulting — architecture, engineering, and construction expertise.",
-  openGraph: {
-    title: "Blog | AlMnaber",
-    description:
-      "Insights, tips, industry trends, and case studies from AlMnaber Consulting.",
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: SiteLocale }>;
+}) {
+  const { locale } = await params;
+  const isAr = locale === "ar";
+
+  return pageMetadata({
+    locale,
+    path: "/blogs",
+    title: isAr ? "المدونة" : "Engineering Insights",
+    description: isAr
+      ? "مقالات ورؤى المنابر في التصميم والهندسة والاستشارات."
+      : "Articles and insights from AMCE about design, engineering, and consultancy.",
+  });
+}
 
 export default function BlogsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return children;
 }

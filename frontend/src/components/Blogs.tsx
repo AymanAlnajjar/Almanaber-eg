@@ -60,6 +60,7 @@ export default function Blogs({ blogs }: BlogsProps) {
                   alt={locale === "ar" ? item.title_ar : item.title_en}
                   fill
                   className="object-cover transition-transform duration-500 hover:scale-110"
+                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
               <div className="p-6 flex-1 flex flex-col">

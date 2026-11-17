@@ -4,10 +4,9 @@ import { LanguageProvider, type Locale } from "@/context/LanguageContext";
 import Footer from "@/components/Footer";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { SITE_NAME_AR, SITE_NAME_EN, SITE_URL } from "@/lib/seo";
 
 const tajawal = Tajawal({ subsets: ["arabic", "latin"], weight: ["400", "500", "700"], display: "swap" });
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://almnabr.eg";
 
 // Pre-render both language trees at build time.
 export function generateStaticParams() {
@@ -24,17 +23,15 @@ export async function generateMetadata({
   const { locale } = await params;
   const isAr = locale === "ar";
 
-  const title = isAr
-    ? "المنابر للاستشارات الهندسية"
-    : "Al Manaber Consulting Engineering";
+  const title = isAr ? SITE_NAME_AR : SITE_NAME_EN;
   const description = isAr
-    ? "شركة المنابر للاستشارات الهندسية — بيت خبرة هندسي رائد متخصص في التصميم المعماري والهندسة الإنشائية والحماية من الحريق والسلامة والبنية التحتية وإدارة المشاريع."
-    : "AlMnaber Consulting is a leading engineering consultancy specializing in architectural design, structural engineering, fire & life safety, infrastructure, and project management.";
+    ? "المنابر للاستشارات الهندسية تقدم خدمات التصميم المعماري والهندسة الإنشائية وتصميم أنظمة الميكانيكا والكهرباء والحماية من الحريق والسلامة."
+    : "Almnabr Consulting Engineering provides architectural, structural, MEP, and fire and life safety engineering services.";
 
   return {
     title: {
       default: title,
-      template: isAr ? "%s | المنابر" : "%s | Al Manaber",
+      template: "%s | AMCE",
     },
     description,
     openGraph: {

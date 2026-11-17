@@ -23,7 +23,7 @@ class ClientController extends Controller
                     'name_ar' => $client->name_ar,
                     'description_en' => $client->description_en,
                     'description_ar' => $client->description_ar,
-                    'logo' => $client->logo ? asset('storage/' . $client->logo) : null,
+                    'logo' => $this->storageUrl($client->logo),
                     'website' => $client->website,
                     'sort_order' => $client->sort_order,
                 ];
@@ -49,7 +49,7 @@ class ClientController extends Controller
             'name_ar' => $client->name_ar,
             'description_en' => $client->description_en,
             'description_ar' => $client->description_ar,
-            'logo' => $client->logo ? asset('storage/' . $client->logo) : null,
+            'logo' => $this->storageUrl($client->logo),
             'website' => $client->website,
             'sort_order' => $client->sort_order,
         ]);

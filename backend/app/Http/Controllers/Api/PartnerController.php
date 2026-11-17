@@ -23,7 +23,7 @@ class PartnerController extends Controller
                     'name_ar' => $partner->name_ar,
                     'description_en' => $partner->description_en,
                     'description_ar' => $partner->description_ar,
-                    'logo' => $partner->logo ? asset('storage/' . $partner->logo) : null,
+                    'logo' => $this->storageUrl($partner->logo),
                     'website' => $partner->website,
                     'sort_order' => $partner->sort_order,
                 ];
@@ -49,7 +49,7 @@ class PartnerController extends Controller
             'name_ar' => $partner->name_ar,
             'description_en' => $partner->description_en,
             'description_ar' => $partner->description_ar,
-            'logo' => $partner->logo ? asset('storage/' . $partner->logo) : null,
+            'logo' => $this->storageUrl($partner->logo),
             'website' => $partner->website,
             'sort_order' => $partner->sort_order,
         ]);

@@ -29,7 +29,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-start justify-between gap-8">
         {/* Logo */}
         <div className="mb-6 md:mb-0 flex-shrink-0">
-          <Image src="/almnabr-logo.png" alt="Logo" width={80} height={80} className="w-20 h-auto" />
+          <Image src="/almnabr-logo.png" alt="Almnabr Consulting Engineering" width={80} height={80} className="w-20 h-auto" />
         </div>
         {/* Navigation */}
         <nav className="flex-1 flex flex-wrap justify-center gap-x-8 gap-y-4 mb-6 md:mb-0">

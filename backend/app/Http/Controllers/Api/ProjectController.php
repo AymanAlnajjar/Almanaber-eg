@@ -25,7 +25,7 @@ class ProjectController extends Controller
                     'area_ar' => $project->area_ar,
                     'types' => !empty($project->types) ? $project->types : ($project->type ? [$project->type] : []),
                     'services' => !empty($project->services) ? $project->services : ($project->service ? [$project->service] : []),
-                    'main_image' => $project->main_image ? asset('storage/' . $project->main_image) : null,
+                    'main_image' => $this->storageUrl($project->main_image),
                     'show_on_homepage' => $project->show_on_homepage,
                 ];
             });
@@ -52,7 +52,7 @@ class ProjectController extends Controller
                     'area_ar' => $project->area_ar,
                     'types' => !empty($project->types) ? $project->types : ($project->type ? [$project->type] : []),
                     'services' => !empty($project->services) ? $project->services : ($project->service ? [$project->service] : []),
-                    'main_image' => $project->main_image ? asset('storage/' . $project->main_image) : null,
+                    'main_image' => $this->storageUrl($project->main_image),
                 ];
             });
 
@@ -83,9 +83,9 @@ class ProjectController extends Controller
             'mission_ar' => $project->mission_ar,
             'types' => !empty($project->types) ? $project->types : ($project->type ? [$project->type] : []),
             'services' => !empty($project->services) ? $project->services : ($project->service ? [$project->service] : []),
-            'main_image' => $project->main_image ? asset('storage/' . $project->main_image) : null,
+            'main_image' => $this->storageUrl($project->main_image),
             'gallery_images' => $project->gallery_images ? array_map(function ($image) {
-                return asset('storage/' . $image);
+                return $this->storageUrl($image);
             }, $project->gallery_images) : [],
             // SEO fields
             'seo' => [
@@ -97,7 +97,7 @@ class ProjectController extends Controller
                 'meta_keywords_ar' => $project->meta_keywords_ar,
                 'slug_en' => $project->slug_en,
                 'slug_ar' => $project->slug_ar,
-                'og_image' => $project->og_image ? asset('storage/' . $project->og_image) : null,
+                'og_image' => $this->storageUrl($project->og_image),
             ],
         ]);
     }

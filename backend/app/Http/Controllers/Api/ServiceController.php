@@ -27,8 +27,8 @@ class ServiceController extends Controller
                     'description_ar' => $service->description_ar,
                     'details_en' => $service->details_en,
                     'details_ar' => $service->details_ar,
-                    'icon' => $service->icon ? asset('storage/' . $service->icon) : null,
-                    'background_image' => $service->background_image ? asset('storage/' . $service->background_image) : null,
+                    'icon' => $this->storageUrl($service->icon),
+                    'background_image' => $this->storageUrl($service->background_image),
                     'sort_order' => $service->sort_order,
                 ];
             });
@@ -71,7 +71,7 @@ class ServiceController extends Controller
                     'area_en' => $project->area_en,
                     'area_ar' => $project->area_ar,
                     'types' => !empty($project->types) ? $project->types : ($project->type ? [$project->type] : []),
-                    'main_image' => $project->main_image ? asset('storage/' . $project->main_image) : null,
+                    'main_image' => $this->storageUrl($project->main_image),
                 ];
             });
 
@@ -85,8 +85,8 @@ class ServiceController extends Controller
             'description_ar' => $service->description_ar,
             'details_en' => $service->details_en,
             'details_ar' => $service->details_ar,
-            'icon' => $service->icon ? asset('storage/' . $service->icon) : null,
-            'background_image' => $service->background_image ? asset('storage/' . $service->background_image) : null,
+            'icon' => $this->storageUrl($service->icon),
+            'background_image' => $this->storageUrl($service->background_image),
             'seo' => [
                 'meta_title_en' => $service->meta_title_en,
                 'meta_title_ar' => $service->meta_title_ar,
@@ -100,9 +100,7 @@ class ServiceController extends Controller
                     : ($service->meta_keywords_ar ?? ''),
                 'slug_en' => $service->slug_en,
                 'slug_ar' => $service->slug_ar,
-                'og_image' => $service->background_image
-                    ? asset('storage/' . $service->background_image)
-                    : null,
+                'og_image' => $this->storageUrl($service->background_image),
             ],
         ]);
     }
